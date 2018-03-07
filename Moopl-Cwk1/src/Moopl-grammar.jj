@@ -1,0 +1,109 @@
+options {
+  STATIC = false;
+}
+
+PARSER_BEGIN(MooplParser)
+  import syntaxtree.*;
+  import syntaxtree.interp.*;
+  import java.util.List;
+  import java.util.LinkedList;
+  public class MooplParser {
+  }
+PARSER_END(MooplParser)
+
+SKIP : /* Define white-space and comments here */
+{
+    " "
+  | "\t"
+  | "\n"
+  | "\r"
+  | "\f"
+  | < "//" (~["\n","\r"])* ("\n"|"\r"|"\r\n") >
+  | <"/*" (~["*"])* "*" ("*" | (~["*","/"] (~["*"])* "*"))* "/">
+}
+
+TOKEN : /* Define the Moopl tokens here. */
+{
+  < PROC: "proc" >
+| < FUN: "fun" >
+| < CLASS: "class" >
+
+// LOTS OF TOKENS MISSING HERE!
+
+| < INTEGER_LITERAL: (["0"-"9"])+ >
+| < ID: ["a"-"z","A"-"Z"](["a"-"z","A"-"Z","0"-"9","_"])* >
+}
+
+/*
+ * TOKEN tester
+ */
+public void testTokens() :
+{
+  Token t;
+}
+{
+  ( ( ( t = <PROC>
+      | t = <FUN>
+      | t = <CLASS>
+        // ADD YOUR OWN TOKENS HERE AS YOU DEFINE EACH ONE
+      )
+      { System.out.println("Recognised as valid token: " + t.image); }
+    )
+  | ( t = <INTEGER_LITERAL>
+      { System.out.println("Recognised as INTEGER_LITERAL: " + t.image); }
+    )
+  | ( t = <ID>
+      { System.out.println("Recognised as ID: " + t.image); }
+    )
+  )*
+}
+
+
+/************************************
+ * The Moopl grammar starts here *
+ ************************************/
+
+
+public void nt_Program() :
+{}
+{
+  (nt_ProcDecl())+ (nt_ClassDecl())*
+}
+
+public void nt_ClassDecl() :
+{}
+{ 
+  <CLASS> // TODO: ADD MISSING CASES
+}
+
+public void nt_MethodDecl() :
+{}
+{
+    nt_ProcDecl() | nt_FunDecl()
+}
+
+public void nt_FunDecl() :
+{}
+{
+  <FUN> // TODO: ADD MISSING CASES
+}
+
+public void nt_ProcDecl() :
+{}
+{
+  <PROC> // TODO: ADD MISSING CASES
+}
+
+public void nt_PrimaryExp() :
+{}
+{
+  <INTEGER_LITERAL> // TODO: ADD MISSING CASES
+}
+
+// TODO: ADD MISSING NON_TERMINALS
+
+public void eof() :
+{}
+{
+  <EOF>
+}
