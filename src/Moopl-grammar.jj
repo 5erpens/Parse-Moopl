@@ -29,6 +29,23 @@ TOKEN : /* Define the Moopl tokens here. */
 | < CLASS: "class" >
 | < TRUE: "true" >
 | < FALSE: "false" >
+| < EXTENDS: "extends" >
+| < RETURN: "return" >
+| < ARRAYOF: "arrayof" >
+| < BOOLEAN: ([TRUE | FALSE]) >
+| < INT: (["0"-"9"])+  >
+| < IF: "if" >
+| < THEN: "then" >
+| < ELSE: "else" >
+| < WHILE: "while" >
+| < DO:"do" >
+| < OUTPUT: "output" >
+| < LENGTH: "length" >
+| < SELF: "self" >
+| < NEW: "new" >
+| < OBJECT: "object" >
+| < ISNULL: "isnull" >
+| < OP: (["and" | "<" | "==" | "div" | "+" | "-" | "*" ]) >
 
 // LOTS OF TOKENS MISSING HERE!
 
