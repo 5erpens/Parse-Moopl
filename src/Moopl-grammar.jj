@@ -27,6 +27,8 @@ TOKEN : /* Define the Moopl tokens here. */
   < PROC: "proc" >
 | < FUN: "fun" >
 | < CLASS: "class" >
+| < TRUE: "true" >
+| < FALSE: "false" >
 
 // LOTS OF TOKENS MISSING HERE!
 
