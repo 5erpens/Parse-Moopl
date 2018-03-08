@@ -64,6 +64,8 @@ public void testTokens() :
   ( ( ( t = <PROC>
       | t = <FUN>
       | t = <CLASS>
+      | t = <TRUE>
+      | t = <FALSE>
         // ADD YOUR OWN TOKENS HERE AS YOU DEFINE EACH ONE
       )
       { System.out.println("Recognised as valid token: " + t.image); }
@@ -117,8 +119,67 @@ public void nt_PrimaryExp() :
 {}
 {
   <INTEGER_LITERAL> // TODO: ADD MISSING CASES
+  |<TRUE>
+  |<FALSE>
+  |(nt_Var())
+  |<SELF>
+  |<NEW> <ARRAYOF> (nt_Type) [nt_Exp]
 }
 
+//added
+public void nt_FieldDecl() :
+{}
+{
+  // TODO: 
+}
+
+public void nt_FormerRest() :
+{}
+{
+  // TODO: 
+}
+
+public void nt_Type() :
+{}
+{
+  // TODO: 
+}
+
+public void nt_Statement() :
+{}
+{
+  // TODO: 
+}
+
+public void nt_Block() :
+{}
+{
+  // TODO: 
+}
+
+public void nt_Exp() :
+{}
+{
+  // TODO: 
+}
+
+public void nt_Var() :
+{}
+{
+  // TODO: 
+}
+
+public void nt_ExpList() :
+{}
+{
+  // TODO: 
+}
+
+public void nt_ExpRest() :
+{}
+{
+  // TODO: 
+}
 // TODO: ADD MISSING NON_TERMINALS
 
 public void eof() :
