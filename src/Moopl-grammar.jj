@@ -32,20 +32,20 @@ TOKEN : /* Define the Moopl tokens here. */
 | < EXTENDS: "extends" >
 | < RETURN: "return" >
 | < ARRAYOF: "arrayof" >
-| < BOOLEAN: ([TRUE | FALSE]) >
+| < BOOLEAN: ("true" | "false") >
 | < INT: (["0"-"9"])+  >
 | < IF: "if" >
 | < THEN: "then" >
 | < ELSE: "else" >
 | < WHILE: "while" >
-| < DO:"do" >
+| < DO: "do" >
 | < OUTPUT: "output" >
 | < LENGTH: "length" >
 | < SELF: "self" >
 | < NEW: "new" >
 | < OBJECT: "object" >
 | < ISNULL: "isnull" >
-| < OP: (["and" | "<" | "==" | "div" | "+" | "-" | "*" ]) >
+| < OP: ("and" | "<" | "==" | "div" | "+" | "-" | "*" ) >
 
 // LOTS OF TOKENS MISSING HERE!
 
@@ -66,6 +66,7 @@ public void testTokens() :
       | t = <CLASS>
       | t = <TRUE>
       | t = <FALSE>
+      | t = <DO>
         // ADD YOUR OWN TOKENS HERE AS YOU DEFINE EACH ONE
       )
       { System.out.println("Recognised as valid token: " + t.image); }
@@ -123,7 +124,7 @@ public void nt_PrimaryExp() :
   |<FALSE>
   |(nt_Var())
   |<SELF>
-  |<NEW> <ARRAYOF> (nt_Type) [nt_Exp]
+  |<NEW> <ARRAYOF> (nt_Type()) [nt_Exp()]
 }
 
 //added
