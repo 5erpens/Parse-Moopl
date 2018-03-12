@@ -1,0 +1,29 @@
+proc test(int x) {
+  Counter counter;
+  counter = new object Counter();
+  int i;
+  i = 0;
+  while (i < x) do {
+    counter.click();
+    i = i + 1;
+  }
+}
+
+class Counter {
+
+  int count;
+
+  proc Counter() {
+    count = 0;
+  }
+
+  proc click() {
+    count = count + 1;
+    output self.getCount();
+  }
+
+  fun int getCount() {
+    return count;
+  }
+
+}
