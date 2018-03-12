@@ -46,6 +46,11 @@ TOKEN : /* Define the Moopl tokens here. */
 | < OBJECT: "object" >
 | < ISNULL: "isnull" >
 | < OP: ("and" | "<" | "==" | "div" | "+" | "-" | "*" ) >
+| < OPENCBA: "{" >
+| < CLOSECBA: "}" >
+| < OPENRBA: "(" >
+| < CLOSERBA: ")" >
+| < SEMICOL: ";" >
 
 // LOTS OF TOKENS MISSING HERE!
 
@@ -95,25 +100,47 @@ public void nt_Program() :
 public void nt_ClassDecl() :
 {}
 { 
-  <CLASS> // TODO: ADD MISSING CASES
+  <CLASS> <ID> nt_ClassDecl2() 
+ 
+}
+
+public void nt_ClassDecl2() :
+{}
+{
+     <OPENCBA> (nt_FieldDecl())* (nt_MethodDecl())* <CLOSECBA>
+   | <EXTENDS> <ID> <OPENCBA> (nt_FieldDecl())* (nt_MethodDecl())* <CLOSECBA>
+}
+
+//added
+public void nt_FieldDecl() :
+{}
+{
+   (nt_Type()) <ID>
 }
 
 public void nt_MethodDecl() :
 {}
 {
-    nt_ProcDecl() | nt_FunDecl()
-}
-
-public void nt_FunDecl() :
-{}
-{
-  <FUN> // TODO: ADD MISSING CASES
+    nt_ProcDecl() 
+  | nt_FunDecl()
 }
 
 public void nt_ProcDecl() :
 {}
 {
-  <PROC> // TODO: ADD MISSING CASES
+  <PROC> <ID> <OPENRBA> nt_FormalList() <CLOSERBA> <OPENCBA> (nt_Statement())* <CLOSECBA>
+}
+
+public void nt_FunDecl() :
+{}
+{
+  <FUN> nt_Type() <ID> <OPENRBA> nt_FormalList() <CLOSERBA> <OPENCBA> (nt_Statement())* <RETURN> nt_Exp() <SEMICOL> <CLOSECBA>
+}
+
+public void nt_FormalList() :
+{}
+{
+  <FUN> // TODO: ADD MISSING CASES
 }
 
 public void nt_PrimaryExp() :
@@ -127,12 +154,7 @@ public void nt_PrimaryExp() :
   |<NEW> <ARRAYOF> (nt_Type()) [nt_Exp()]
 }
 
-//added
-public void nt_FieldDecl() :
-{}
-{
-  // TODO: 
-}
+
 
 public void nt_FormerRest() :
 {}
