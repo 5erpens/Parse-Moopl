@@ -56,6 +56,7 @@ TOKEN : /* Define the Moopl tokens here. */
 | < COMMA: "," >
 | < EQUAL: "=" >
 | < EXCLAMATION: "!" >
+| < DOT: "." >
 
 // LOTS OF TOKENS MISSING HERE!
 
@@ -180,7 +181,7 @@ public void nt_Statement2() :
 {}
 {
   <OPENSBA> nt_Exp() <CLOSESBA> <EQUAL> nt_Exp() <SEMICOL>
-  | <ID> <OPENRBA> nt_ExpList() <CLOSERBA> <SEMICOL>
+  | <DOT> <ID> <OPENRBA> nt_ExpList() <CLOSERBA> <SEMICOL>
 }
 
 public void nt_Block() :
