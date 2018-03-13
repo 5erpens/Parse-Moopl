@@ -213,11 +213,17 @@ public void nt_PrimaryExp() :
   | <FALSE>
   | nt_Var()
   | <SELF>
-  | <NEW> <ARRAYOF> <OPENRBA> nt_Type() <CLOSERBA> <OPENSBA> nt_Exp() <CLOSESBA>
-  | <NEW> <OBJECT> <ID> <OPENRBA> nt_ExpList() <CLOSERBA>
+  | <NEW> nt_PrimaryExp2()
   | <EXCLAMATION> nt_PrimaryExp()
   | <ISNULL> nt_PrimaryExp()
   | <OPENRBA> nt_Exp() <CLOSERBA>
+}
+
+public void nt_PrimaryExp2() :
+{}
+{
+  <ARRAYOF> <OPENRBA> nt_Type() <CLOSERBA> <OPENSBA> nt_Exp() <CLOSESBA>
+  | <OBJECT> <ID> <OPENRBA> nt_ExpList() <CLOSERBA>
 }
 
 public void nt_Var() :
