@@ -146,7 +146,7 @@ public void nt_FormalList() :
 {}
 {
    nt_Type() <ID> (nt_FormerRest())*
-   | " "
+   | {}
 }
 
 public void nt_FormerRest() :
@@ -202,7 +202,7 @@ public void nt_Exp2() :
   | <OPENSBA> nt_Exp() <CLOSESBA>
   | <LENGTH>
   | <ID> <OPENRBA> nt_ExpList() <CLOSERBA>
-  | " "
+  | {}
 }
 
 public void nt_PrimaryExp() :
@@ -230,7 +230,7 @@ public void nt_ExpList() :
 {}
 {
   nt_Exp() (nt_ExpRest())*
-  | " "
+  | {}
 }
 
 public void nt_ExpRest() :

@@ -15,9 +15,67 @@ public interface MooplParserConstants {
   /** RegularExpression Id. */
   int CLASS = 10;
   /** RegularExpression Id. */
-  int INTEGER_LITERAL = 11;
+  int TRUE = 11;
   /** RegularExpression Id. */
-  int ID = 12;
+  int FALSE = 12;
+  /** RegularExpression Id. */
+  int EXTENDS = 13;
+  /** RegularExpression Id. */
+  int RETURN = 14;
+  /** RegularExpression Id. */
+  int ARRAYOF = 15;
+  /** RegularExpression Id. */
+  int BOOLEAN = 16;
+  /** RegularExpression Id. */
+  int INT = 17;
+  /** RegularExpression Id. */
+  int IF = 18;
+  /** RegularExpression Id. */
+  int THEN = 19;
+  /** RegularExpression Id. */
+  int ELSE = 20;
+  /** RegularExpression Id. */
+  int WHILE = 21;
+  /** RegularExpression Id. */
+  int DO = 22;
+  /** RegularExpression Id. */
+  int OUTPUT = 23;
+  /** RegularExpression Id. */
+  int LENGTH = 24;
+  /** RegularExpression Id. */
+  int SELF = 25;
+  /** RegularExpression Id. */
+  int NEW = 26;
+  /** RegularExpression Id. */
+  int OBJECT = 27;
+  /** RegularExpression Id. */
+  int ISNULL = 28;
+  /** RegularExpression Id. */
+  int OP = 29;
+  /** RegularExpression Id. */
+  int OPENCBA = 30;
+  /** RegularExpression Id. */
+  int CLOSECBA = 31;
+  /** RegularExpression Id. */
+  int OPENRBA = 32;
+  /** RegularExpression Id. */
+  int CLOSERBA = 33;
+  /** RegularExpression Id. */
+  int OPENSBA = 34;
+  /** RegularExpression Id. */
+  int CLOSESBA = 35;
+  /** RegularExpression Id. */
+  int SEMICOL = 36;
+  /** RegularExpression Id. */
+  int COMMA = 37;
+  /** RegularExpression Id. */
+  int EQUAL = 38;
+  /** RegularExpression Id. */
+  int EXCLAMATION = 39;
+  /** RegularExpression Id. */
+  int INTEGER_LITERAL = 40;
+  /** RegularExpression Id. */
+  int ID = 41;
 
   /** Lexical state. */
   int DEFAULT = 0;
@@ -35,6 +93,35 @@ public interface MooplParserConstants {
     "\"proc\"",
     "\"fun\"",
     "\"class\"",
+    "\"true\"",
+    "\"false\"",
+    "\"extends\"",
+    "\"return\"",
+    "\"arrayof\"",
+    "<BOOLEAN>",
+    "<INT>",
+    "\"if\"",
+    "\"then\"",
+    "\"else\"",
+    "\"while\"",
+    "\"do\"",
+    "\"output\"",
+    "\"length\"",
+    "\"self\"",
+    "\"new\"",
+    "\"object\"",
+    "\"isnull\"",
+    "<OP>",
+    "\"{\"",
+    "\"}\"",
+    "\"(\"",
+    "\")\"",
+    "\"[\"",
+    "\"]\"",
+    "\";\"",
+    "\",\"",
+    "\"=\"",
+    "\"!\"",
     "<INTEGER_LITERAL>",
     "<ID>",
   };
