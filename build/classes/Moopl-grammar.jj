@@ -50,7 +50,12 @@ TOKEN : /* Define the Moopl tokens here. */
 | < CLOSECBA: "}" >
 | < OPENRBA: "(" >
 | < CLOSERBA: ")" >
+| < OPENSBA: "[" >
+| < CLOSESBA: "]" >
 | < SEMICOL: ";" >
+| < COMMA: "," >
+| < EQUAL: "=" >
+| < EXCLAMATION: "!" >
 
 // LOTS OF TOKENS MISSING HERE!
 
@@ -107,7 +112,7 @@ public void nt_ClassDecl() :
 public void nt_ClassDecl2() :
 {}
 {
-     <OPENCBA> (nt_FieldDecl())* (nt_MethodDecl())* <CLOSECBA>
+   <OPENCBA> (nt_FieldDecl())* (nt_MethodDecl())* <CLOSECBA>
    | <EXTENDS> <ID> <OPENCBA> (nt_FieldDecl())* (nt_MethodDecl())* <CLOSECBA>
 }
 
@@ -121,7 +126,7 @@ public void nt_FieldDecl() :
 public void nt_MethodDecl() :
 {}
 {
-    nt_ProcDecl() 
+  nt_ProcDecl() 
   | nt_FunDecl()
 }
 
@@ -140,68 +145,98 @@ public void nt_FunDecl() :
 public void nt_FormalList() :
 {}
 {
-  <FUN> // TODO: ADD MISSING CASES
+   nt_Type() <ID> (nt_FormerRest())*
+   | " "
+}
+
+public void nt_FormerRest() :
+{}
+{
+   <COMMA> nt_Type() <ID>
+}
+
+public void nt_Type() :
+{}
+{
+  <ARRAYOF> <OPENRBA> nt_Type() <CLOSERBA>
+  | <BOOLEAN>
+  | <INT>
+  | <ID>
+}
+
+public void nt_Statement() :
+{}
+{
+  nt_Block()
+  | nt_Type() <ID> <SEMICOL>
+  | nt_Var() <EQUAL> nt_Exp() <SEMICOL>
+  | <IF> <OPENRBA> nt_Exp() <CLOSERBA> <THEN> nt_Block() <ELSE> nt_Block()
+  | nt_PrimaryExp() nt_Statement2()
+  | <WHILE> <OPENRBA> nt_Exp() <CLOSERBA> <DO> nt_Block()
+  | <OUTPUT> nt_Exp() <SEMICOL>
+}
+
+public void nt_Statement2() :
+{}
+{
+  <OPENSBA> nt_Exp() <CLOSESBA> <EQUAL> nt_Exp() <SEMICOL>
+  | <ID> <OPENRBA> nt_ExpList() <CLOSERBA> <SEMICOL>
+}
+
+public void nt_Block() :
+{}
+{
+  <OPENCBA> (nt_Statement())* <CLOSECBA>
+}
+
+public void nt_Exp() :
+{}
+{
+  nt_PrimaryExp() nt_Exp2()
+}
+
+public void nt_Exp2() :
+{}
+{
+  <OP> nt_PrimaryExp()
+  | <OPENSBA> nt_Exp() <CLOSESBA>
+  | <LENGTH>
+  | <ID> <OPENRBA> nt_ExpList() <CLOSERBA>
+  | " "
 }
 
 public void nt_PrimaryExp() :
 {}
 {
   <INTEGER_LITERAL> // TODO: ADD MISSING CASES
-  |<TRUE>
-  |<FALSE>
-  |(nt_Var())
-  |<SELF>
-  |<NEW> <ARRAYOF> (nt_Type()) [nt_Exp()]
-}
-
-
-
-public void nt_FormerRest() :
-{}
-{
-  // TODO: 
-}
-
-public void nt_Type() :
-{}
-{
-  // TODO: 
-}
-
-public void nt_Statement() :
-{}
-{
-  // TODO: 
-}
-
-public void nt_Block() :
-{}
-{
-  // TODO: 
-}
-
-public void nt_Exp() :
-{}
-{
-  // TODO: 
+  | <TRUE>
+  | <FALSE>
+  | nt_Var()
+  | <SELF>
+  | <NEW> <ARRAYOF> <OPENRBA> nt_Type() <CLOSERBA> <OPENSBA> nt_Exp() <CLOSESBA>
+  | <NEW> <OBJECT> <ID> <OPENRBA> nt_ExpList() <CLOSERBA>
+  | <EXCLAMATION> nt_PrimaryExp()
+  | <ISNULL> nt_PrimaryExp()
+  | <OPENRBA> nt_Exp() <CLOSERBA>
 }
 
 public void nt_Var() :
 {}
 {
-  // TODO: 
+  <ID>
 }
 
 public void nt_ExpList() :
 {}
 {
-  // TODO: 
+  nt_Exp() (nt_ExpRest())*
+  | " "
 }
 
 public void nt_ExpRest() :
 {}
 {
-  // TODO: 
+  <COMMA> nt_Exp() 
 }
 // TODO: ADD MISSING NON_TERMINALS
 
