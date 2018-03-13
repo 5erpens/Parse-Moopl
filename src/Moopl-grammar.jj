@@ -168,12 +168,20 @@ public void nt_Type() :
 public void nt_Statement() :
 {}
 {
-  nt_Block()
-  | nt_Type() <ID> <SEMICOL> 
-  | <IF> <OPENRBA> nt_Exp() <CLOSERBA> <THEN> nt_Block() <ELSE> nt_Block()
+  nt_Block() 
+  | nt_DummyStatement()
   | nt_PrimaryExp() nt_Statement2()
+  | <IF> <OPENRBA> nt_Exp() <CLOSERBA> <THEN> nt_Block() <ELSE> nt_Block()
   | <WHILE> <OPENRBA> nt_Exp() <CLOSERBA> <DO> nt_Block()
   | <OUTPUT> nt_Exp() <SEMICOL>
+}
+
+public void nt_DummyStatement() :
+{}
+{
+nt_Type() <ID> <SEMICOL>
+ | nt_Var() <EQUAL> nt_Exp() <SEMICOL>
+
 }
 
 public void nt_Statement2() :
@@ -181,7 +189,6 @@ public void nt_Statement2() :
 {
   <OPENSBA> nt_Exp() <CLOSESBA> <EQUAL> nt_Exp() <SEMICOL>
   | <DOT> <ID> <OPENRBA> nt_ExpList() <CLOSERBA> <SEMICOL>
-  | <EQUAL> nt_Exp() <SEMICOL>
 }
 
 public void nt_Block() :
@@ -201,9 +208,16 @@ public void nt_Exp2() :
 {
   <OP> nt_PrimaryExp()
   | <OPENSBA> nt_Exp() <CLOSESBA>
-  | <LENGTH>
+  | <DOT> nt_Exp3()
   | <ID> <OPENRBA> nt_ExpList() <CLOSERBA>
   | {}
+}
+
+public void nt_Exp3() :
+{}
+{
+  <LENGTH>
+  | <ID> <OPENRBA> nt_ExpList() <CLOSERBA>
 }
 
 public void nt_PrimaryExp() :
