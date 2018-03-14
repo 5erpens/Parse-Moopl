@@ -51,33 +51,47 @@ public interface MooplParserConstants {
   /** RegularExpression Id. */
   int ISNULL = 28;
   /** RegularExpression Id. */
-  int OP = 29;
+  int AND = 29;
   /** RegularExpression Id. */
-  int OPENCBA = 30;
+  int LESSTHAN = 30;
   /** RegularExpression Id. */
-  int CLOSECBA = 31;
+  int EQUALEQUAL = 31;
   /** RegularExpression Id. */
-  int OPENRBA = 32;
+  int DIV = 32;
   /** RegularExpression Id. */
-  int CLOSERBA = 33;
+  int ADD = 33;
   /** RegularExpression Id. */
-  int OPENSBA = 34;
+  int SUB = 34;
   /** RegularExpression Id. */
-  int CLOSESBA = 35;
+  int MULTI = 35;
   /** RegularExpression Id. */
-  int SEMICOL = 36;
+  int OP = 36;
   /** RegularExpression Id. */
-  int COMMA = 37;
+  int OPENCBA = 37;
   /** RegularExpression Id. */
-  int EQUAL = 38;
+  int CLOSECBA = 38;
   /** RegularExpression Id. */
-  int NOT = 39;
+  int OPENRBA = 39;
   /** RegularExpression Id. */
-  int DOT = 40;
+  int CLOSERBA = 40;
   /** RegularExpression Id. */
-  int INTEGER_LITERAL = 41;
+  int OPENSBA = 41;
   /** RegularExpression Id. */
-  int ID = 42;
+  int CLOSESBA = 42;
+  /** RegularExpression Id. */
+  int SEMICOL = 43;
+  /** RegularExpression Id. */
+  int COMMA = 44;
+  /** RegularExpression Id. */
+  int EQUAL = 45;
+  /** RegularExpression Id. */
+  int NOT = 46;
+  /** RegularExpression Id. */
+  int DOT = 47;
+  /** RegularExpression Id. */
+  int INTEGER_LITERAL = 48;
+  /** RegularExpression Id. */
+  int ID = 49;
 
   /** Lexical state. */
   int DEFAULT = 0;
@@ -113,6 +127,13 @@ public interface MooplParserConstants {
     "\"new\"",
     "\"object\"",
     "\"isnull\"",
+    "\"&&\"",
+    "\"<\"",
+    "\"==\"",
+    "\"/\"",
+    "\"+\"",
+    "\"-\"",
+    "\"*\"",
     "<OP>",
     "\"{\"",
     "\"}\"",
