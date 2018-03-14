@@ -204,9 +204,12 @@ public void nt_Statement() :
 {}
 {
   nt_Block() 
-  | nt_Type() <ID> <SEMICOL>
-  | nt_Var() <EQUAL> nt_Exp() <SEMICOL>
-  | nt_PrimaryExp() ((<OPENSBA> nt_Exp() <CLOSESBA> <EQUAL> nt_Exp() <SEMICOL>) | (<DOT> <ID> <OPENRBA> nt_ExpList() <CLOSERBA> <SEMICOL>))
+  | LOOKAHEAD(2)
+    nt_Type() <ID> <SEMICOL>
+  | LOOKAHEAD(2) 
+    nt_Var() <EQUAL> nt_Exp() <SEMICOL>
+  | LOOKAHEAD(2) 
+    nt_PrimaryExp() ((<OPENSBA> nt_Exp() <CLOSESBA> <EQUAL> nt_Exp() <SEMICOL>) | (<DOT> <ID> <OPENRBA> nt_ExpList() <CLOSERBA> <SEMICOL>))
   | <IF> <OPENRBA> nt_Exp() <CLOSERBA> <THEN> nt_Block() <ELSE> nt_Block()
   | <WHILE> <OPENRBA> nt_Exp() <CLOSERBA> <DO> nt_Block()
   | <OUTPUT> nt_Exp() <SEMICOL>
