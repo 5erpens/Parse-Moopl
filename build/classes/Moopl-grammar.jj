@@ -33,7 +33,7 @@ TOKEN : /* Define the Moopl tokens here. */
 | < RETURN: "return" >
 | < ARRAYOF: "arrayof" >
 | < BOOLEAN: ("true" | "false") >
-| < INT: (["0"-"9"])+  >
+| < INT: "int" >
 | < IF: "if" >
 | < THEN: "then" >
 | < ELSE: "else" >
@@ -45,15 +45,8 @@ TOKEN : /* Define the Moopl tokens here. */
 | < NEW: "new" >
 | < OBJECT: "object" >
 | < ISNULL: "isnull" >
-| < AND: "&&" >
-| < LESSTHAN: "<" >
-| < EQUALEQUAL: "==" >
-| < DIV: "/" >
-| < ADD: "+" >
-| < SUB: "-" >
-| < MULTI: "*" >
-// todo
-| < OP: ("&&" | "<" | "==" | "/" | "+" | "-" | "*" ) >
+//need to look at later
+| < OP: ("and" | "<" | "==" | "div" | "+" | "-" | "*" ) >
 | < OPENCBA: "{" >
 | < CLOSECBA: "}" >
 | < OPENRBA: "(" >
@@ -257,17 +250,12 @@ public void nt_PrimaryExp() :
   | <FALSE>
   | nt_Var()
   | <SELF>
-  | <NEW> nt_PrimaryExp2()
+  | LOOKAHEAD(2)
+    <NEW> <ARRAYOF> <OPENRBA> nt_Type() <CLOSERBA> <OPENSBA> nt_Exp() <CLOSESBA>
+  | <NEW> <OBJECT> <ID> <OPENRBA> nt_ExpList() <CLOSERBA>
   | <NOT> nt_PrimaryExp()
   | <ISNULL> nt_PrimaryExp()
   | <OPENRBA> nt_Exp() <CLOSERBA>
-}
-
-public void nt_PrimaryExp2() :
-{}
-{
-  <ARRAYOF> <OPENRBA> nt_Type() <CLOSERBA> <OPENSBA> nt_Exp() <CLOSESBA>
-  | <OBJECT> <ID> <OPENRBA> nt_ExpList() <CLOSERBA>
 }
 
 public void nt_Var() :

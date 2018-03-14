@@ -101,7 +101,7 @@ public interface MooplParserConstants {
     "\"return\"",
     "\"arrayof\"",
     "<BOOLEAN>",
-    "<INT>",
+    "\"int\"",
     "\"if\"",
     "\"then\"",
     "\"else\"",
