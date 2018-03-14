@@ -77,7 +77,34 @@ public void testTokens() :
       | t = <CLASS>
       | t = <TRUE>
       | t = <FALSE>
+      | t = <EXTENDS>
+      | t = <RETURN>
+      | t = <ARRAYOF>
+      | t = <BOOLEAN>
+      | t = <INT>
+      | t = <IF>
+      | t = <THEN>
+      | t = <ELSE>
+      | t = <WHILE>
       | t = <DO>
+      | t = <OUTPUT>
+      | t = <LENGTH>
+      | t = <SELF>
+      | t = <NEW>
+      | t = <OBJECT>
+      | t = <ISNULL>
+      | t = <OP>
+      | t = <OPENCBA>
+      | t = <CLOSECBA>
+      | t = <OPENRBA>
+      | t = <CLOSERBA>
+      | t = <OPENSBA>
+      | t = <CLOSESBA>
+      | t = <SEMICOL>
+      | t = <COMMA>
+      | t = <EQUAL>
+      | t = <EXCLAMATION>
+      | t = <DOT>
         // ADD YOUR OWN TOKENS HERE AS YOU DEFINE EACH ONE
       )
       { System.out.println("Recognised as valid token: " + t.image); }
@@ -169,26 +196,12 @@ public void nt_Statement() :
 {}
 {
   nt_Block() 
-  | nt_DummyStatement()
-  | nt_PrimaryExp() nt_Statement2()
+  | nt_Type() <ID> <SEMICOL>
+  | nt_Var() <EQUAL> nt_Exp() <SEMICOL>
+  | nt_PrimaryExp() ((<OPENSBA> nt_Exp() <CLOSESBA> <EQUAL> nt_Exp() <SEMICOL>) | (<DOT> <ID> <OPENRBA> nt_ExpList() <CLOSERBA> <SEMICOL>))
   | <IF> <OPENRBA> nt_Exp() <CLOSERBA> <THEN> nt_Block() <ELSE> nt_Block()
   | <WHILE> <OPENRBA> nt_Exp() <CLOSERBA> <DO> nt_Block()
   | <OUTPUT> nt_Exp() <SEMICOL>
-}
-
-public void nt_DummyStatement() :
-{}
-{
-nt_Type() <ID> <SEMICOL>
- | nt_Var() <EQUAL> nt_Exp() <SEMICOL>
-
-}
-
-public void nt_Statement2() :
-{}
-{
-  <OPENSBA> nt_Exp() <CLOSESBA> <EQUAL> nt_Exp() <SEMICOL>
-  | <DOT> <ID> <OPENRBA> nt_ExpList() <CLOSERBA> <SEMICOL>
 }
 
 public void nt_Block() :
