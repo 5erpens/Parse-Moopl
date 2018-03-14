@@ -71,7 +71,7 @@ public interface MooplParserConstants {
   /** RegularExpression Id. */
   int EQUAL = 38;
   /** RegularExpression Id. */
-  int EXCLAMATION = 39;
+  int NOT = 39;
   /** RegularExpression Id. */
   int DOT = 40;
   /** RegularExpression Id. */

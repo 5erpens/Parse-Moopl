@@ -45,7 +45,7 @@ TOKEN : /* Define the Moopl tokens here. */
 | < NEW: "new" >
 | < OBJECT: "object" >
 | < ISNULL: "isnull" >
-| < OP: ("and" | "<" | "==" | "div" | "+" | "-" | "*" ) >
+| < OP: ("&&" | "<" | "==" | "div" | "+" | "-" | "*" ) >
 | < OPENCBA: "{" >
 | < CLOSECBA: "}" >
 | < OPENRBA: "(" >
@@ -55,7 +55,7 @@ TOKEN : /* Define the Moopl tokens here. */
 | < SEMICOL: ";" >
 | < COMMA: "," >
 | < EQUAL: "=" >
-| < EXCLAMATION: "!" >
+| < NOT: "!" >
 | < DOT: "." >
 
 // LOTS OF TOKENS MISSING HERE!
@@ -103,7 +103,7 @@ public void testTokens() :
       | t = <SEMICOL>
       | t = <COMMA>
       | t = <EQUAL>
-      | t = <EXCLAMATION>
+      | t = <NOT>
       | t = <DOT>
         // ADD YOUR OWN TOKENS HERE AS YOU DEFINE EACH ONE
       )
@@ -204,6 +204,12 @@ public void nt_Statement() :
   | <OUTPUT> nt_Exp() <SEMICOL>
 }
 
+public void nt_Statement1() :
+{}
+{
+  <OPENCBA> (nt_Statement())* <CLOSECBA>
+}
+
 public void nt_Block() :
 {}
 {
@@ -222,7 +228,6 @@ public void nt_Exp2() :
   <OP> nt_PrimaryExp()
   | <OPENSBA> nt_Exp() <CLOSESBA>
   | <DOT> nt_Exp3()
-  | <ID> <OPENRBA> nt_ExpList() <CLOSERBA>
   | {}
 }
 
@@ -242,7 +247,7 @@ public void nt_PrimaryExp() :
   | nt_Var()
   | <SELF>
   | <NEW> nt_PrimaryExp2()
-  | <EXCLAMATION> nt_PrimaryExp()
+  | <NOT> nt_PrimaryExp()
   | <ISNULL> nt_PrimaryExp()
   | <OPENRBA> nt_Exp() <CLOSERBA>
 }
