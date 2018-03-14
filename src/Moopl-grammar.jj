@@ -149,7 +149,7 @@ public void nt_ClassDecl2() :
 public void nt_FieldDecl() :
 {}
 {
-   (nt_Type()) <ID>
+   (nt_Type()) <ID> <SEMICOL>
 }
 
 public void nt_MethodDecl() :
@@ -206,12 +206,6 @@ public void nt_Statement() :
   | <IF> <OPENRBA> nt_Exp() <CLOSERBA> <THEN> nt_Block() <ELSE> nt_Block()
   | <WHILE> <OPENRBA> nt_Exp() <CLOSERBA> <DO> nt_Block()
   | <OUTPUT> nt_Exp() <SEMICOL>
-}
-
-public void nt_Statement1() :
-{}
-{
-  <OPENCBA> (nt_Statement())* <CLOSECBA>
 }
 
 public void nt_Block() :
