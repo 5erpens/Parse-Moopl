@@ -45,14 +45,6 @@ TOKEN : /* Define the Moopl tokens here. */
 | < NEW: "new" >
 | < OBJECT: "object" >
 | < ISNULL: "isnull" >
-| < AND: "&&" >
-| < LESSTHAN: "<" >
-| < EQUALEQUAL: "==" >
-| < DIV: "/" >
-| < ADD: "+" >
-| < SUB: "-" >
-| < MULTI: "*" >
-// todo
 | < OP: ("&&" | "<" | "==" | "/" | "+" | "-" | "*" ) >
 | < OPENCBA: "{" >
 | < CLOSECBA: "}" >
