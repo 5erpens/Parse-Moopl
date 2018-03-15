@@ -125,32 +125,36 @@ public void testTokens() :
 
 
 public void nt_Program() :
-{}
-{
-  (nt_ProcDecl())+ (nt_ClassDecl())*
+{ ClassDecl cd;
+  ProcDecl pd;
+  List<ProcDecl> l1 = new LinkedList<ProcDecl>();
+  List<ClassDecl> l2 = new LinkedList<ClassDecl>();
+}
+{ 
+  nt_ProcDecl() (cd =nt_ProcDecl() {l1.add(cd);} )* (pd=nt_ClassDecl() {l2.add(pd); })* { return new Program(l1,l2);}
 }
 
 public void nt_ClassDecl() :
 {
-  Token t;
+  Token t1,t2;
+  FieldDecl fd;
+  MethodDecl md;
+  List<FieldDecl> l1 = new LinkedList<FieldDecl>();
+  List<MethodDecl> l2 = new LinkedList<MethodDecl>();
 }
 { 
-  <CLASS> <ID>{return new Var(t.image);} nt_ClassDecl2() 
- 
-}
-
-public void nt_ClassDecl2() :
-{}
-{
-   <OPENCBA> (nt_FieldDecl())* (nt_MethodDecl())* <CLOSECBA>
-   | <EXTENDS> <ID>{return new Var(t.image);} <OPENCBA> (nt_FieldDecl())* (nt_MethodDecl())* <CLOSECBA>
+  LOOKAHEAD(2)
+  <CLASS> (t1=<ID> {return new Var(t.image);} <OPENCBA> (fd=nt_FieldDecl(){l1.add(fd);})* (md=nt_MethodDecl(){l2.add(fd);})* <CLOSECBA>){return new ClassDeclSimple(t1,l1,l2);}
+  |<CLASS> (t1=<ID> {return new Var(t.image);} <EXTENDS> t2=<ID>{return new Var(t.image);} <OPENCBA> (fd=nt_FieldDecl(){l1.add(fd);})* (md=nt_MethodDecl(){l2.add(md);})* <CLOSECBA>){return new ClassDeclSimple(t1,t2,l1,l2);}
 }
 
 //added
 public void nt_FieldDecl() :
-{}
 {
-   (nt_Type()) <ID> {return new Var(t.image);}<SEMICOL>
+  Token t;
+}
+{
+   (nt_Type()) t=<ID> {return new Var(t.image);}<SEMICOL>
 }
 
 public void nt_MethodDecl() :
@@ -163,7 +167,7 @@ public void nt_MethodDecl() :
 public void nt_ProcDecl() :
 {}
 {
-  <PROC> <ID> {return new Var(t.image);}<OPENRBA> nt_FormalList() <CLOSERBA> <OPENCBA> (nt_Statement())* <CLOSECBA>
+  <PROC> <ID> {return new Var(t.image);}<OPENRBA> nt_FormalList() <CLOSERBA> <OPENCBA> <CLOSECBA>
 }
 
 public void nt_FunDecl() :
