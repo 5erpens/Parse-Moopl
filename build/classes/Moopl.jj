@@ -45,7 +45,6 @@ TOKEN : /* Define the Moopl tokens here. */
 | < NEW: "new" >
 | < OBJECT: "object" >
 | < ISNULL: "isnull" >
-//need to look at later
 | < OP: ("and" | "<" | "==" | "div" | "+" | "-" | "*" ) >
 | < OPENCBA: "{" >
 | < CLOSECBA: "}" >
@@ -132,9 +131,11 @@ public void nt_Program() :
 }
 
 public void nt_ClassDecl() :
-{}
+{
+  Token t;
+}
 { 
-  <CLASS> <ID> nt_ClassDecl2() 
+  <CLASS> <ID>{return new Var(t.image);} nt_ClassDecl2() 
  
 }
 
@@ -142,14 +143,14 @@ public void nt_ClassDecl2() :
 {}
 {
    <OPENCBA> (nt_FieldDecl())* (nt_MethodDecl())* <CLOSECBA>
-   | <EXTENDS> <ID> <OPENCBA> (nt_FieldDecl())* (nt_MethodDecl())* <CLOSECBA>
+   | <EXTENDS> <ID>{return new Var(t.image);} <OPENCBA> (nt_FieldDecl())* (nt_MethodDecl())* <CLOSECBA>
 }
 
 //added
 public void nt_FieldDecl() :
 {}
 {
-   (nt_Type()) <ID> <SEMICOL>
+   (nt_Type()) <ID> {return new Var(t.image);}<SEMICOL>
 }
 
 public void nt_MethodDecl() :
@@ -162,26 +163,26 @@ public void nt_MethodDecl() :
 public void nt_ProcDecl() :
 {}
 {
-  <PROC> <ID> <OPENRBA> nt_FormalList() <CLOSERBA> <OPENCBA> (nt_Statement())* <CLOSECBA>
+  <PROC> <ID> {return new Var(t.image);}<OPENRBA> nt_FormalList() <CLOSERBA> <OPENCBA> (nt_Statement())* <CLOSECBA>
 }
 
 public void nt_FunDecl() :
 {}
 {
-  <FUN> nt_Type() <ID> <OPENRBA> nt_FormalList() <CLOSERBA> <OPENCBA> (nt_Statement())* <RETURN> nt_Exp() <SEMICOL> <CLOSECBA>
+  <FUN> nt_Type() <ID> {return new Var(t.image);}<OPENRBA> nt_FormalList() <CLOSERBA> <OPENCBA> (nt_Statement())* <RETURN> nt_Exp() <SEMICOL> <CLOSECBA>
 }
 
 public void nt_FormalList() :
 {}
 {
-   nt_Type() <ID> (nt_FormerRest())*
+   nt_Type() <ID> {return new Var(t.image);}(nt_FormerRest())*
    | {}
 }
 
 public void nt_FormerRest() :
 {}
 {
-   <COMMA> nt_Type() <ID>
+   <COMMA> nt_Type() <ID> {return new Var(t.image);}
 }
 
 public void nt_Type() :
@@ -190,7 +191,7 @@ public void nt_Type() :
   <ARRAYOF> <OPENRBA> nt_Type() <CLOSERBA>
   | <BOOLEAN>
   | <INT>
-  | <ID>
+  | <ID> {return new Var(t.image);}
 }
 
 public void nt_Statement() :
@@ -198,7 +199,7 @@ public void nt_Statement() :
 {
   nt_Block() 
   | LOOKAHEAD(2)
-    nt_Type() <ID> <SEMICOL>
+    nt_Type() <ID> {return new Var(t.image);} <SEMICOL>
   | LOOKAHEAD(2) 
     nt_Var() <EQUAL> nt_Exp() <SEMICOL>
   | LOOKAHEAD(2) 
@@ -223,7 +224,9 @@ public void nt_Exp() :
 public void nt_Exp2() :
 {}
 {
-  <OP> nt_PrimaryExp()
+  <OP> {
+
+  }nt_PrimaryExp()
   | <OPENSBA> nt_Exp() <CLOSESBA>
   | <DOT> nt_Exp3()
   | {}
@@ -237,25 +240,30 @@ public void nt_Exp3() :
 }
 
 public void nt_PrimaryExp() :
-{}
 {
-  <INTEGER_LITERAL> // TODO: ADD MISSING CASES
-  | <TRUE>
-  | <FALSE>
+  Token t;
+  Exp e;
+}
+{
+ t = <INTEGER_LITERAL> {return new ExpInteger(Integer.parseInt(t.image)); }
+  | <TRUE> {return Exptrue(); }
+  | <FALSE> {return ExpFalse(); }
   | nt_Var()
-  | <SELF>
+  | <SELF> { return ExpSelf(); }
   | LOOKAHEAD(2)
     <NEW> <ARRAYOF> <OPENRBA> nt_Type() <CLOSERBA> <OPENSBA> nt_Exp() <CLOSESBA>
-  | <NEW> <OBJECT> <ID> <OPENRBA> nt_ExpList() <CLOSERBA>
-  | <NOT> nt_PrimaryExp()
+  | <NEW> <OBJECT> <ID>{ return new Var(t.image); } <OPENRBA> nt_ExpList() <CLOSERBA>
+  | <NOT> { return ExpNot(e.image); } nt_PrimaryExp()
   | <ISNULL> nt_PrimaryExp()
   | <OPENRBA> nt_Exp() <CLOSERBA>
 }
 
 public void nt_Var() :
-{}
 {
-  <ID>
+  Token t;
+}
+{
+  t = <ID>{return new Var(t.image);}
 }
 
 public void nt_ExpList() :
