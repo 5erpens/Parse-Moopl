@@ -183,16 +183,16 @@ public void nt_FunDecl() :
 {
   Stm s;
   List<Stm> l1 = new LinkedList<Stm>();
+  List<Formal> l2 = new LinkedList<Formal>();
 }
 {
-  <FUN> nt_Type() <ID> <OPENRBA> nt_FormalList() <CLOSERBA> <OPENCBA> (s =nt_Statement(){l1.add(s);})* <RETURN> nt_Exp() <SEMICOL> <CLOSECBA>
+  <FUN> nt_Type() <ID> <OPENRBA> l2=nt_FormalList() <CLOSERBA> <OPENCBA> (s =nt_Statement(){l1.add(s);})* <RETURN> nt_Exp() <SEMICOL> <CLOSECBA>
 }
 
 public void nt_FormalList() : 
 {
   Token t;
-  List<Formal> l2 = new LinkedList<Formal>();
-}
+ }
 {
    nt_Type() t=<ID> (nt_FormerRest())*
    | {}
