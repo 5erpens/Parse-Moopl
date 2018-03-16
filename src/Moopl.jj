@@ -147,7 +147,7 @@ public ClassDecl nt_ClassDecl() :
 { 
   LOOKAHEAD(2)
   <CLASS> (t1=<ID> { new Var(t1.image);} <OPENCBA> (fd=nt_FieldDecl(){l1.add(fd);})* (md=nt_MethodDecl(){l2.add(md);})* <CLOSECBA>){return new ClassDeclSimple(String.valueOf(t1),l1,l2);}
-  |<CLASS> (t1=<ID> { new Var(t1.image);} <EXTENDS> t2=<ID>{ new Var(t2.image);} <OPENCBA> (fd=nt_FieldDecl(){l1.add(fd);})* (md=nt_MethodDecl(){l2.add(md);})* <CLOSECBA>){return new ClassDeclExtend(String.valueOf(t1), String.valueOf(t2),l1,l2);}
+  |<CLASS> (t1=<ID> { new Var(t1.image);} <EXTENDS> t2=<ID>{ new Var(t2.image);} <OPENCBA> (fd=nt_FieldDecl(){l1.add(fd);})* (md=nt_MethodDecl(){l2.add(md);})* <CLOSECBA>){return new ClassDeclExtends(String.valueOf(t1), String.valueOf(t2),l1,l2);}
 } 
 
 
@@ -168,7 +168,7 @@ public MethodDecl nt_MethodDecl() :
   | nt_FunDecl()
 }
 
-public ProDecl nt_ProcDecl() :
+public ProcDecl nt_ProcDecl() :
 {
   Token t;
   Stm s;
@@ -206,7 +206,7 @@ public void nt_FormerRest() :
 
 public void nt_Type() :
 {
-  Token t1;
+  Token t;
 }
 {
   t =<ARRAYOF>{ new TypeArray();} <OPENRBA> nt_Type() <CLOSERBA>

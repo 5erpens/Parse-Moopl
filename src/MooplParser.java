@@ -328,7 +328,7 @@
                                                                                                                                                  l2.add(md);
         }
         jj_consume_token(CLOSECBA);
-                                                                                                                                                                            {if (true) return new ClassDeclExtend(String.valueOf(t1), String.valueOf(t2),l1,l2);}
+                                                                                                                                                                            {if (true) return new ClassDeclExtends(String.valueOf(t1), String.valueOf(t2),l1,l2);}
         break;
       default:
         jj_la1[9] = jj_gen;
@@ -363,7 +363,7 @@
     }
   }
 
-  final public ProDecl nt_ProcDecl() throws ParseException {
+  final public ProcDecl nt_ProcDecl() throws ParseException {
   Token t;
   Stm s;
   List<Stm> l1 = new LinkedList<Stm>();
@@ -493,17 +493,18 @@
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case ARRAYOF:
       t = jj_consume_token(ARRAYOF);
+                new TypeArray();
       jj_consume_token(OPENRBA);
       nt_Type();
       jj_consume_token(CLOSERBA);
       break;
     case BOOLEAN:
-      jj_consume_token(BOOLEAN);
-               {if (true) return new TypeBoolean();}
+      t = jj_consume_token(BOOLEAN);
+                   {if (true) return new TypeBoolean();}
       break;
     case INT:
-      jj_consume_token(INT);
-            {if (true) return new TypeInt();}
+      t = jj_consume_token(INT);
+                {if (true) return new TypeInt();}
       break;
     case ID:
       t = jj_consume_token(ID);
