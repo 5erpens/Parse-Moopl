@@ -45,6 +45,7 @@ TOKEN : /* Define the Moopl tokens here. */
 | < NEW: "new" >
 | < OBJECT: "object" >
 | < ISNULL: "isnull" >
+//need to look at later
 | < OP: ("and" | "<" | "==" | "div" | "+" | "-" | "*" ) >
 | < OPENCBA: "{" >
 | < CLOSECBA: "}" >
@@ -124,17 +125,18 @@ public void testTokens() :
  ************************************/
 
 
-public void nt_Program() :
-{ ClassDecl cd;
+public Program nt_Program() :
+{
+  ClassDecl cd;
   ProcDecl pd;
   List<ProcDecl> l1 = new LinkedList<ProcDecl>();
   List<ClassDecl> l2 = new LinkedList<ClassDecl>();
 }
-{ 
-  nt_ProcDecl() (cd =nt_ProcDecl() {l1.add(cd);} )* (pd=nt_ClassDecl() {l2.add(pd); })* { return new Program(l1,l2);}
+{
+  nt_ProcDecl() ((pd =nt_ProcDecl() {l1.add(pd);} )* (cd=nt_ClassDecl() {l2.add(cd); })*) { return new Program(l1,l2);}
 }
 
-public void nt_ClassDecl() :
+public ClassDecl nt_ClassDecl() :
 {
   Token t1,t2;
   FieldDecl fd;
@@ -144,49 +146,62 @@ public void nt_ClassDecl() :
 }
 { 
   LOOKAHEAD(2)
-  <CLASS> (t1=<ID> {return new Var(t.image);} <OPENCBA> (fd=nt_FieldDecl(){l1.add(fd);})* (md=nt_MethodDecl(){l2.add(fd);})* <CLOSECBA>){return new ClassDeclSimple(t1,l1,l2);}
-  |<CLASS> (t1=<ID> {return new Var(t.image);} <EXTENDS> t2=<ID>{return new Var(t.image);} <OPENCBA> (fd=nt_FieldDecl(){l1.add(fd);})* (md=nt_MethodDecl(){l2.add(md);})* <CLOSECBA>){return new ClassDeclSimple(t1,t2,l1,l2);}
-}
+  <CLASS> (t1=<ID> { new Var(t1.image);} <OPENCBA> (fd=nt_FieldDecl(){l1.add(fd);})* (md=nt_MethodDecl(){l2.add(md);})* <CLOSECBA>){return new ClassDeclSimple(t1,l1,l2);}
+  |<CLASS> (t1=<ID> { new Var(t1.image);} <EXTENDS> t2=<ID>{ new Var(t2.image);} <OPENCBA> (fd=nt_FieldDecl(){l1.add(fd);})* (md=nt_MethodDecl(){l2.add(md);})* <CLOSECBA>){return new ClassDeclExtend(t1,t2,l1,l2);}
+} 
+
 
 //added
-public void nt_FieldDecl() :
+public FieldDecl nt_FieldDecl() :
 {
-  Token t;
+  Type t;
+  String id;
 }
 {
-   (nt_Type()) t=<ID> {return new Var(t.image);}<SEMICOL>
+   (nt_Type()) <ID> <SEMICOL>
 }
 
-public void nt_MethodDecl() :
+public MethodDecl nt_MethodDecl() :
 {}
 {
   nt_ProcDecl() 
   | nt_FunDecl()
 }
 
-public void nt_ProcDecl() :
-{}
+public ProDecl nt_ProcDecl() :
 {
-  <PROC> <ID> {return new Var(t.image);}<OPENRBA> nt_FormalList() <CLOSERBA> <OPENCBA> <CLOSECBA>
+  Token t;
+  Stm s;
+  List<Stm> l1 = new LinkedList<Stm>();
+  List<Formal> l2 = new LinkedList<Formal>();
+}
+{
+   <PROC> (t=<ID> { new Var(t.image);} <OPENRBA> l2=nt_FormalList() <CLOSERBA> <OPENCBA> (s =nt_Statement(){l1.add(s);})* <CLOSECBA>) {return new ProcDecl(t,l2,l1);}
 }
 
 public void nt_FunDecl() :
-{}
 {
-  <FUN> nt_Type() <ID> {return new Var(t.image);}<OPENRBA> nt_FormalList() <CLOSERBA> <OPENCBA> (nt_Statement())* <RETURN> nt_Exp() <SEMICOL> <CLOSECBA>
+  Stm s;
+  List<Stm> l1 = new LinkedList<Stm>();
+}
+{
+  <FUN> nt_Type() <ID> <OPENRBA> nt_FormalList() <CLOSERBA> <OPENCBA> (s =nt_Statement(){l1.add(s);})* <RETURN> nt_Exp() <SEMICOL> <CLOSECBA>
 }
 
-public void nt_FormalList() :
-{}
+public void nt_FormalList() : 
 {
-   nt_Type() <ID> {return new Var(t.image);}(nt_FormerRest())*
+  Token t;
+  List<Formal> l2 = new LinkedList<Formal>();
+}
+{
+   nt_Type() t=<ID> (nt_FormerRest())*
    | {}
 }
 
 public void nt_FormerRest() :
 {}
 {
-   <COMMA> nt_Type() <ID> {return new Var(t.image);}
+   <COMMA> nt_Type() <ID>
 }
 
 public void nt_Type() :
@@ -195,7 +210,7 @@ public void nt_Type() :
   <ARRAYOF> <OPENRBA> nt_Type() <CLOSERBA>
   | <BOOLEAN>
   | <INT>
-  | <ID> {return new Var(t.image);}
+  | <ID>
 }
 
 public void nt_Statement() :
@@ -203,7 +218,7 @@ public void nt_Statement() :
 {
   nt_Block() 
   | LOOKAHEAD(2)
-    nt_Type() <ID> {return new Var(t.image);} <SEMICOL>
+    nt_Type() <ID> <SEMICOL>
   | LOOKAHEAD(2) 
     nt_Var() <EQUAL> nt_Exp() <SEMICOL>
   | LOOKAHEAD(2) 
@@ -228,9 +243,7 @@ public void nt_Exp() :
 public void nt_Exp2() :
 {}
 {
-  <OP> {
-
-  }nt_PrimaryExp()
+  <OP> nt_PrimaryExp()
   | <OPENSBA> nt_Exp() <CLOSESBA>
   | <DOT> nt_Exp3()
   | {}
@@ -244,30 +257,25 @@ public void nt_Exp3() :
 }
 
 public void nt_PrimaryExp() :
+{}
 {
-  Token t;
-  Exp e;
-}
-{
- t = <INTEGER_LITERAL> {return new ExpInteger(Integer.parseInt(t.image)); }
-  | <TRUE> {return Exptrue(); }
-  | <FALSE> {return ExpFalse(); }
+  <INTEGER_LITERAL> // TODO: ADD MISSING CASES
+  | <TRUE>
+  | <FALSE>
   | nt_Var()
-  | <SELF> { return ExpSelf(); }
+  | <SELF>
   | LOOKAHEAD(2)
     <NEW> <ARRAYOF> <OPENRBA> nt_Type() <CLOSERBA> <OPENSBA> nt_Exp() <CLOSESBA>
-  | <NEW> <OBJECT> <ID>{ return new Var(t.image); } <OPENRBA> nt_ExpList() <CLOSERBA>
-  | <NOT> { return ExpNot(e.image); } nt_PrimaryExp()
+  | <NEW> <OBJECT> <ID> <OPENRBA> nt_ExpList() <CLOSERBA>
+  | <NOT> nt_PrimaryExp()
   | <ISNULL> nt_PrimaryExp()
   | <OPENRBA> nt_Exp() <CLOSERBA>
 }
 
 public void nt_Var() :
+{}
 {
-  Token t;
-}
-{
-  t = <ID>{return new Var(t.image);}
+  <ID>
 }
 
 public void nt_ExpList() :

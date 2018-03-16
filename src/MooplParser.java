@@ -208,10 +208,14 @@
     }
   }
 
-  final public void nt_Program() throws ParseException {
+  final public Program nt_Program() throws ParseException {
+  ClassDecl cd;
+  ProcDecl pd;
+  List<ProcDecl> l1 = new LinkedList<ProcDecl>();
+  List<ClassDecl> l2 = new LinkedList<ClassDecl>();
+    nt_ProcDecl();
     label_2:
     while (true) {
-      nt_ProcDecl();
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case PROC:
         ;
@@ -220,6 +224,8 @@
         jj_la1[3] = jj_gen;
         break label_2;
       }
+      pd = nt_ProcDecl();
+                                     l1.add(pd);
     }
     label_3:
     while (true) {
@@ -231,19 +237,23 @@
         jj_la1[4] = jj_gen;
         break label_3;
       }
-      nt_ClassDecl();
+      cd = nt_ClassDecl();
+                                                                         l2.add(cd);
     }
+                                                                                            {if (true) return new Program(l1,l2);}
+    throw new Error("Missing return statement in function");
   }
 
-  final public void nt_ClassDecl() throws ParseException {
-    jj_consume_token(CLASS);
-    jj_consume_token(ID);
-    nt_ClassDecl2();
-  }
-
-  final public void nt_ClassDecl2() throws ParseException {
-    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-    case OPENCBA:
+  final public ClassDecl nt_ClassDecl() throws ParseException {
+  Token t1,t2;
+  FieldDecl fd;
+  MethodDecl md;
+  List<FieldDecl> l1 = new LinkedList<FieldDecl>();
+  List<MethodDecl> l2 = new LinkedList<MethodDecl>();
+    if (jj_2_1(2)) {
+      jj_consume_token(CLASS);
+      t1 = jj_consume_token(ID);
+                     new Var(t1.image);
       jj_consume_token(OPENCBA);
       label_4:
       while (true) {
@@ -258,7 +268,8 @@
           jj_la1[5] = jj_gen;
           break label_4;
         }
-        nt_FieldDecl();
+        fd = nt_FieldDecl();
+                                                                      l1.add(fd);
       }
       label_5:
       while (true) {
@@ -271,58 +282,72 @@
           jj_la1[6] = jj_gen;
           break label_5;
         }
-        nt_MethodDecl();
+        md = nt_MethodDecl();
+                                                                                                         l2.add(md);
       }
       jj_consume_token(CLOSECBA);
-      break;
-    case EXTENDS:
-      jj_consume_token(EXTENDS);
-      jj_consume_token(ID);
-      jj_consume_token(OPENCBA);
-      label_6:
-      while (true) {
-        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-        case ARRAYOF:
-        case BOOLEAN:
-        case INT:
-        case ID:
-          ;
-          break;
-        default:
-          jj_la1[7] = jj_gen;
-          break label_6;
+                                                                                                                                    {if (true) return new ClassDeclSimple(t1,l1,l2);}
+    } else {
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case CLASS:
+        jj_consume_token(CLASS);
+        t1 = jj_consume_token(ID);
+                      new Var(t1.image);
+        jj_consume_token(EXTENDS);
+        t2 = jj_consume_token(ID);
+                                                             new Var(t2.image);
+        jj_consume_token(OPENCBA);
+        label_6:
+        while (true) {
+          switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+          case ARRAYOF:
+          case BOOLEAN:
+          case INT:
+          case ID:
+            ;
+            break;
+          default:
+            jj_la1[7] = jj_gen;
+            break label_6;
+          }
+          fd = nt_FieldDecl();
+                                                                                                              l1.add(fd);
         }
-        nt_FieldDecl();
-      }
-      label_7:
-      while (true) {
-        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-        case PROC:
-        case FUN:
-          ;
-          break;
-        default:
-          jj_la1[8] = jj_gen;
-          break label_7;
+        label_7:
+        while (true) {
+          switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+          case PROC:
+          case FUN:
+            ;
+            break;
+          default:
+            jj_la1[8] = jj_gen;
+            break label_7;
+          }
+          md = nt_MethodDecl();
+                                                                                                                                                 l2.add(md);
         }
-        nt_MethodDecl();
+        jj_consume_token(CLOSECBA);
+                                                                                                                                                                            {if (true) return new ClassDeclExtend(t1,t2,l1,l2);}
+        break;
+      default:
+        jj_la1[9] = jj_gen;
+        jj_consume_token(-1);
+        throw new ParseException();
       }
-      jj_consume_token(CLOSECBA);
-      break;
-    default:
-      jj_la1[9] = jj_gen;
-      jj_consume_token(-1);
-      throw new ParseException();
     }
+    throw new Error("Missing return statement in function");
   }
 
-  final public void nt_FieldDecl() throws ParseException {
+  final public FieldDecl nt_FieldDecl() throws ParseException {
+  Type t;
+  String id;
     nt_Type();
     jj_consume_token(ID);
     jj_consume_token(SEMICOL);
   }
 
-  final public void nt_MethodDecl() throws ParseException {
+  final public MethodDecl nt_MethodDecl() throws ParseException {
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case PROC:
       nt_ProcDecl();
@@ -337,11 +362,16 @@
     }
   }
 
-  final public void nt_ProcDecl() throws ParseException {
+  final public ProDecl nt_ProcDecl() throws ParseException {
+  Token t;
+  Stm s;
+  List<Stm> l1 = new LinkedList<Stm>();
+  List<Formal> l2 = new LinkedList<Formal>();
     jj_consume_token(PROC);
-    jj_consume_token(ID);
+    t = jj_consume_token(ID);
+                    new Var(t.image);
     jj_consume_token(OPENRBA);
-    nt_FormalList();
+    l2 = nt_FormalList();
     jj_consume_token(CLOSERBA);
     jj_consume_token(OPENCBA);
     label_8:
@@ -369,9 +399,12 @@
         jj_la1[11] = jj_gen;
         break label_8;
       }
-      nt_Statement();
+      s = nt_Statement();
+                                                                                                            l1.add(s);
     }
     jj_consume_token(CLOSECBA);
+                                                                                                                                       {if (true) return new ProcDecl(t,l2,l1);}
+    throw new Error("Missing return statement in function");
   }
 
   final public void nt_FunDecl() throws ParseException {
@@ -479,16 +512,16 @@
       break;
     default:
       jj_la1[17] = jj_gen;
-      if (jj_2_1(2)) {
+      if (jj_2_2(2)) {
         nt_Type();
         jj_consume_token(ID);
         jj_consume_token(SEMICOL);
-      } else if (jj_2_2(2)) {
+      } else if (jj_2_3(2)) {
         nt_Var();
         jj_consume_token(EQUAL);
         nt_Exp();
         jj_consume_token(SEMICOL);
-      } else if (jj_2_3(2)) {
+      } else if (jj_2_4(2)) {
         nt_PrimaryExp();
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
         case OPENSBA:
@@ -641,7 +674,7 @@
       break;
     default:
       jj_la1[22] = jj_gen;
-      if (jj_2_4(2)) {
+      if (jj_2_5(2)) {
         jj_consume_token(NEW);
         jj_consume_token(ARRAYOF);
         jj_consume_token(OPENRBA);
@@ -754,13 +787,67 @@
     finally { jj_save(3, xla); }
   }
 
+  private boolean jj_2_5(int xla) {
+    jj_la = xla; jj_lastpos = jj_scanpos = token;
+    try { return !jj_3_5(); }
+    catch(LookaheadSuccess ls) { return true; }
+    finally { jj_save(4, xla); }
+  }
+
+  private boolean jj_3R_21() {
+    if (jj_scan_token(OPENRBA)) return true;
+    if (jj_3R_22()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_20() {
+    if (jj_scan_token(ISNULL)) return true;
+    if (jj_3R_14()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_19() {
+    if (jj_scan_token(NOT)) return true;
+    if (jj_3R_14()) return true;
+    return false;
+  }
+
   private boolean jj_3_4() {
+    if (jj_3R_14()) return true;
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_15()) {
+    jj_scanpos = xsp;
+    if (jj_3R_16()) return true;
+    }
+    return false;
+  }
+
+  private boolean jj_3R_18() {
+    if (jj_scan_token(NEW)) return true;
+    if (jj_scan_token(OBJECT)) return true;
+    return false;
+  }
+
+  private boolean jj_3_3() {
+    if (jj_scan_token(42)) return true;
+    if (jj_scan_token(EQUAL)) return true;
+    return false;
+  }
+
+  private boolean jj_3_5() {
     if (jj_scan_token(NEW)) return true;
     if (jj_scan_token(ARRAYOF)) return true;
     return false;
   }
 
   private boolean jj_3_1() {
+    if (jj_scan_token(CLASS)) return true;
+    if (jj_scan_token(ID)) return true;
+    return false;
+  }
+
+  private boolean jj_3_2() {
     if (jj_3R_13()) return true;
     if (jj_scan_token(ID)) return true;
     return false;
@@ -789,7 +876,7 @@
     jj_scanpos = xsp;
     if (jj_scan_token(25)) {
     jj_scanpos = xsp;
-    if (jj_3_4()) {
+    if (jj_3_5()) {
     jj_scanpos = xsp;
     if (jj_3R_18()) {
     jj_scanpos = xsp;
@@ -837,47 +924,6 @@
     return false;
   }
 
-  private boolean jj_3R_21() {
-    if (jj_scan_token(OPENRBA)) return true;
-    if (jj_3R_22()) return true;
-    return false;
-  }
-
-  private boolean jj_3R_20() {
-    if (jj_scan_token(ISNULL)) return true;
-    if (jj_3R_14()) return true;
-    return false;
-  }
-
-  private boolean jj_3R_19() {
-    if (jj_scan_token(NOT)) return true;
-    if (jj_3R_14()) return true;
-    return false;
-  }
-
-  private boolean jj_3_3() {
-    if (jj_3R_14()) return true;
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_15()) {
-    jj_scanpos = xsp;
-    if (jj_3R_16()) return true;
-    }
-    return false;
-  }
-
-  private boolean jj_3R_18() {
-    if (jj_scan_token(NEW)) return true;
-    if (jj_scan_token(OBJECT)) return true;
-    return false;
-  }
-
-  private boolean jj_3_2() {
-    if (jj_scan_token(42)) return true;
-    if (jj_scan_token(EQUAL)) return true;
-    return false;
-  }
-
   /** Generated Token Manager. */
   public MooplParserTokenManager token_source;
   SimpleCharStream jj_input_stream;
@@ -897,12 +943,12 @@
       jj_la1_init_1();
    }
    private static void jj_la1_init_0() {
-      jj_la1_0 = new int[] {0xffffff00,0xffffff00,0xffffff00,0x100,0x400,0x38000,0x300,0x38000,0x300,0x40002000,0x300,0x56a79800,0x56a79800,0x0,0x38000,0x38000,0x0,0x40000000,0xa40000,0x56a79800,0x20000000,0x1000000,0x2001800,0x14000000,0x0,0x16001800,};
+      jj_la1_0 = new int[] {0xffffff00,0xffffff00,0xffffff00,0x100,0x400,0x38000,0x300,0x38000,0x300,0x400,0x300,0x56a79800,0x56a79800,0x0,0x38000,0x38000,0x0,0x40000000,0xa40000,0x56a79800,0x20000000,0x1000000,0x2001800,0x14000000,0x0,0x16001800,};
    }
    private static void jj_la1_init_1() {
       jj_la1_1 = new int[] {0x7ff,0x1ff,0x7ff,0x0,0x0,0x400,0x0,0x400,0x0,0x0,0x0,0x681,0x681,0x20,0x400,0x400,0x104,0x0,0x0,0x681,0x104,0x400,0x600,0x81,0x20,0x681,};
    }
-  final private JJCalls[] jj_2_rtns = new JJCalls[4];
+  final private JJCalls[] jj_2_rtns = new JJCalls[5];
   private boolean jj_rescan = false;
   private int jj_gc = 0;
 
@@ -1130,7 +1176,7 @@
 
   private void jj_rescan_token() {
     jj_rescan = true;
-    for (int i = 0; i < 4; i++) {
+    for (int i = 0; i < 5; i++) {
     try {
       JJCalls p = jj_2_rtns[i];
       do {
@@ -1141,6 +1187,7 @@
             case 1: jj_3_2(); break;
             case 2: jj_3_3(); break;
             case 3: jj_3_4(); break;
+            case 4: jj_3_5(); break;
           }
         }
         p = p.next;
