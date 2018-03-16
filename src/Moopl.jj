@@ -146,19 +146,19 @@ public ClassDecl nt_ClassDecl() :
 }
 { 
   LOOKAHEAD(2)
-  <CLASS> (t1=<ID> { new Var(t1.image);} <OPENCBA> (fd=nt_FieldDecl(){l1.add(fd);})* (md=nt_MethodDecl(){l2.add(md);})* <CLOSECBA>){return new ClassDeclSimple(t1,l1,l2);}
-  |<CLASS> (t1=<ID> { new Var(t1.image);} <EXTENDS> t2=<ID>{ new Var(t2.image);} <OPENCBA> (fd=nt_FieldDecl(){l1.add(fd);})* (md=nt_MethodDecl(){l2.add(md);})* <CLOSECBA>){return new ClassDeclExtend(t1,t2,l1,l2);}
+  <CLASS> (t1=<ID> { new Var(t1.image);} <OPENCBA> (fd=nt_FieldDecl(){l1.add(fd);})* (md=nt_MethodDecl(){l2.add(md);})* <CLOSECBA>){return new ClassDeclSimple(String.valueOf(t1),l1,l2);}
+  |<CLASS> (t1=<ID> { new Var(t1.image);} <EXTENDS> t2=<ID>{ new Var(t2.image);} <OPENCBA> (fd=nt_FieldDecl(){l1.add(fd);})* (md=nt_MethodDecl(){l2.add(md);})* <CLOSECBA>){return new ClassDeclExtend(String.valueOf(t1), String.valueOf(t2),l1,l2);}
 } 
 
 
 //added
 public FieldDecl nt_FieldDecl() :
 {
-  Type t;
+  Token t;
   String id;
 }
 {
-   (nt_Type()) <ID> <SEMICOL>
+   (nt_Type()) t = <ID>{ new Var(t.image);} <SEMICOL>
 }
 
 public MethodDecl nt_MethodDecl() :
@@ -176,7 +176,7 @@ public ProDecl nt_ProcDecl() :
   List<Formal> l2 = new LinkedList<Formal>();
 }
 {
-   <PROC> (t=<ID> { new Var(t.image);} <OPENRBA> l2=nt_FormalList() <CLOSERBA> <OPENCBA> (s =nt_Statement(){l1.add(s);})* <CLOSECBA>) {return new ProcDecl(t,l2,l1);}
+   <PROC> (t=<ID> { new Var(t.image);} <OPENRBA> l2=nt_FormalList() <CLOSERBA> <OPENCBA> (s =nt_Statement(){l1.add(s);})* <CLOSECBA>) {return new ProcDecl(String.valueOf(t),l2,l1);}
 }
 
 public void nt_FunDecl() :
@@ -189,12 +189,12 @@ public void nt_FunDecl() :
   <FUN> nt_Type() <ID> <OPENRBA> l2=nt_FormalList() <CLOSERBA> <OPENCBA> (s =nt_Statement(){l1.add(s);})* <RETURN> nt_Exp() <SEMICOL> <CLOSECBA>
 }
 
-public void nt_FormalList() : 
+public List<Formal> nt_FormalList() : 
 {
   Token t;
  }
 {
-   nt_Type() t=<ID> (nt_FormerRest())*
+   t = nt_Type() { } t=<ID> (nt_FormerRest())*
    | {}
 }
 
@@ -205,15 +205,17 @@ public void nt_FormerRest() :
 }
 
 public void nt_Type() :
-{}
 {
-  <ARRAYOF> <OPENRBA> nt_Type() <CLOSERBA>
-  | <BOOLEAN>
-  | <INT>
-  | <ID>
+  Token t1;
+}
+{
+  t =<ARRAYOF>{ new TypeArray();} <OPENRBA> nt_Type() <CLOSERBA>
+  | t = <BOOLEAN>{ return new TypeBoolean(); }
+  | t = <INT> { return new TypeInt(); }
+  | t = <ID> { new Var(t.image);}
 }
 
-public void nt_Statement() :
+public Stm nt_Statement() :
 {}
 {
   nt_Block() 

@@ -139,6 +139,8 @@ public Program nt_Program() :
 public ClassDecl nt_ClassDecl() :
 {
   Token t1,t2;
+  String s1;
+  String s2;
   FieldDecl fd;
   MethodDecl md;
   List<FieldDecl> l1 = new LinkedList<FieldDecl>();
@@ -146,8 +148,8 @@ public ClassDecl nt_ClassDecl() :
 }
 { 
   LOOKAHEAD(2)
-  <CLASS> (t1=<ID> { new Var(t1.image);} <OPENCBA> (fd=nt_FieldDecl(){l1.add(fd);})* (md=nt_MethodDecl(){l2.add(md);})* <CLOSECBA>){return new ClassDeclSimple(t1,l1,l2);}
-  |<CLASS> (t1=<ID> { new Var(t1.image);} <EXTENDS> t2=<ID>{ new Var(t2.image);} <OPENCBA> (fd=nt_FieldDecl(){l1.add(fd);})* (md=nt_MethodDecl(){l2.add(md);})* <CLOSECBA>){return new ClassDeclExtend(t1,t2,l1,l2);}
+  <CLASS> (t1=<ID> { new Var(t1.image);} <OPENCBA> (fd=nt_FieldDecl(){l1.add(fd);})* (md=nt_MethodDecl(){l2.add(md);})* <CLOSECBA>){s1 = String.valueOf(t1); return new ClassDeclSimple( s1,l1,l2);}
+  |<CLASS> (t1=<ID> { new Var(t1.image);} <EXTENDS> t2=<ID>{ new Var(t2.image);} <OPENCBA> (fd=nt_FieldDecl(){l1.add(fd);})* (md=nt_MethodDecl(){l2.add(md);})* <CLOSECBA>){s1 = String.valueOf(t1); s2= String.valueOf(t2); return new ClassDeclExtend(s1,s2,l1,l2);}
 } 
 
 
@@ -171,12 +173,13 @@ public MethodDecl nt_MethodDecl() :
 public ProDecl nt_ProcDecl() :
 {
   Token t;
+  String s;
   Stm s;
   List<Stm> l1 = new LinkedList<Stm>();
   List<Formal> l2 = new LinkedList<Formal>();
 }
 {
-   <PROC> (t=<ID> { new Var(t.image);} <OPENRBA> l2=nt_FormalList() <CLOSERBA> <OPENCBA> (s =nt_Statement(){l1.add(s);})* <CLOSECBA>) {return new ProcDecl(t,l2,l1);}
+   <PROC> (t=<ID> { new Var(t.image);} <OPENRBA> l2=nt_FormalList() <CLOSERBA> <OPENCBA> (s =nt_Statement(){l1.add(s);})* <CLOSECBA>) {s = String.valueOf(t); return new ProcDecl(s,l2,l1);}
 }
 
 public void nt_FunDecl() :
@@ -286,9 +289,11 @@ public void nt_ExpList() :
 }
 
 public void nt_ExpRest() :
-{}
 {
-  <COMMA> nt_Exp() 
+  Exp e;
+}
+{
+  <COMMA> e = nt_Exp() { return e;}
 }
 
 public void eof() :
