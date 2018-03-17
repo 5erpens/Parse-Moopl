@@ -350,17 +350,15 @@
   final public MethodDecl nt_MethodDecl() throws ParseException {
   ProcDecl pd;
   FunDecl fd;
-  String s;
-  List<Formal> lf = new LinkedList<Formal>();
-  List<Stm> ls = new LinkedList<Stm>();
+  MethodDecl md;
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case PROC:
-      pd = nt_ProcDecl();
-                      {if (true) return null;}
+      md = nt_ProcDecl();
+                      {if (true) return md;}
       break;
     case FUN:
-      fd = nt_FunDecl();
-                       {if (true) return null ;}
+      md = nt_FunDecl();
+                       {if (true) return md;}
       break;
     default:
       jj_la1[10] = jj_gen;
@@ -912,6 +910,23 @@
     finally { jj_save(9, xla); }
   }
 
+  private boolean jj_3R_19() {
+    if (jj_scan_token(INT)) return true;
+    return false;
+  }
+
+  private boolean jj_3R_18() {
+    if (jj_scan_token(BOOLEAN)) return true;
+    return false;
+  }
+
+  private boolean jj_3_7() {
+    if (jj_3R_15()) return true;
+    if (jj_scan_token(OPENSBA)) return true;
+    if (jj_3R_16()) return true;
+    return false;
+  }
+
   private boolean jj_3_6() {
     if (jj_3R_15()) return true;
     if (jj_scan_token(OP)) return true;
@@ -1110,23 +1125,6 @@
 
   private boolean jj_3R_20() {
     if (jj_scan_token(ID)) return true;
-    return false;
-  }
-
-  private boolean jj_3R_19() {
-    if (jj_scan_token(INT)) return true;
-    return false;
-  }
-
-  private boolean jj_3R_18() {
-    if (jj_scan_token(BOOLEAN)) return true;
-    return false;
-  }
-
-  private boolean jj_3_7() {
-    if (jj_3R_15()) return true;
-    if (jj_scan_token(OPENSBA)) return true;
-    if (jj_3R_16()) return true;
     return false;
   }
 

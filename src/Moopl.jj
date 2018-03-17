@@ -163,15 +163,11 @@ public FieldDecl nt_FieldDecl() :
 
 public MethodDecl nt_MethodDecl() :
 {
-  ProcDecl pd;
-  FunDecl fd;
-  String s;
-  List<Formal> lf = new LinkedList<Formal>();
-  List<Stm> ls = new LinkedList<Stm>();
+  MethodDecl md;
 }
 {
-  pd = nt_ProcDecl(){ return null; }
-  |fd = nt_FunDecl() { return null ;}
+  md = nt_ProcDecl(){ return md; }
+  |md = nt_FunDecl() { return md; }
 }
 
 public ProcDecl nt_ProcDecl() :
