@@ -243,10 +243,8 @@ public Stm nt_Statement() :
     ((ty=nt_Type()) (t=<ID>) <SEMICOL>){ return new StmVarDecl(ty,t.image);}
   | LOOKAHEAD(2) 
     ((v=nt_Var()) <EQUAL> (e=nt_Exp()) <SEMICOL>){return new StmAssign(v,e);}
-  | LOOKAHEAD(3)
-    ((e = nt_PrimaryExp()) <OPENSBA> (e2 = nt_Exp()) <CLOSESBA> <EQUAL> (e3 = nt_Exp()) <SEMICOL>) {return new StmArrayAssign(e,e2,e3);}
-  | LOOKAHEAD(3) 
-    ((e = nt_PrimaryExp()) <DOT> (t = <ID>) <OPENRBA> (le = nt_ExpList()) <CLOSERBA> <SEMICOL> ) {return new StmCall(e,t.image,le); }
+  | (e = nt_PrimaryExp()) (<OPENSBA> (e2 = nt_Exp()) <CLOSESBA> <EQUAL> (e3 = nt_Exp()) <SEMICOL> {return new StmArrayAssign(e,e2,e3);}
+  |  <DOT> (t = <ID>) <OPENRBA> (le = nt_ExpList()) <CLOSERBA> <SEMICOL>  {return new StmCall(e,t.image,le); } )
   | (<IF> <OPENRBA> (e = nt_Exp()) <CLOSERBA> <THEN> (ls = nt_Block()) <ELSE> (ls2 = nt_Block())) {return new StmIf(e,new StmBlock(ls),new StmBlock(ls2)); }
   | (<WHILE> <OPENRBA> (e = nt_Exp()) <CLOSERBA> <DO> (ls = nt_Block())) {return new StmWhile(e, new StmBlock(ls)); }
   | (<OUTPUT> (e = nt_Exp()) <SEMICOL>) { return new StmOutput(e); }
