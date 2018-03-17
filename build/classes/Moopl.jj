@@ -145,9 +145,8 @@ public ClassDecl nt_ClassDecl() :
   List<MethodDecl> l2 = new LinkedList<MethodDecl>();
 }
 { 
-  LOOKAHEAD(2)
-  <CLASS> (t1=<ID>  <OPENCBA> (fd=nt_FieldDecl(){l1.add(fd);})* (md=nt_MethodDecl(){l2.add(md);})* <CLOSECBA>){return new ClassDeclSimple(t1.image,l1,l2);}
-  |<CLASS> (t1=<ID> <EXTENDS> t2=<ID> <OPENCBA> (fd=nt_FieldDecl(){l1.add(fd);})* (md=nt_MethodDecl(){l2.add(md);})* <CLOSECBA>){return new ClassDeclExtends(t1.image,t2.image,l1,l2);}
+  <CLASS> t1=<ID> (<OPENCBA> (fd=nt_FieldDecl(){l1.add(fd);})* (md=nt_MethodDecl(){l2.add(md);})* <CLOSECBA>{return new ClassDeclSimple(t1.image,l1,l2);}
+  | <EXTENDS> t2=<ID> <OPENCBA> (fd=nt_FieldDecl(){l1.add(fd);})* (md=nt_MethodDecl(){l2.add(md);})* <CLOSECBA>{return new ClassDeclExtends(t1.image,t2.image,l1,l2);} )
 } 
 
 
@@ -195,7 +194,7 @@ public FunDecl nt_FunDecl() :
   (<FUN> (ty =nt_Type()) (t=<ID>) <OPENRBA> l2=nt_FormalList() <CLOSERBA> <OPENCBA> (s =nt_Statement(){l1.add(s);})* <RETURN> (e = nt_Exp()) <SEMICOL> <CLOSECBA>){return new FunDecl(ty, t.image,l2,l1, e);}
 }
 
-public List<Formal> nt_FormalList() : 
+public List<Formal> nt_FormalList() :
 {
   Type ty;
   Token t;
@@ -204,7 +203,7 @@ public List<Formal> nt_FormalList() :
 }
 {
    (((ty=nt_Type()) (t=<ID>)){l.add(new Formal(ty,t.image));} (f = nt_FormerRest(){l.add(f);})*) {return l;}
-   | {return null;}
+   | {return l;}
 }
 
 public Formal nt_FormerRest() :
@@ -270,8 +269,7 @@ public Exp nt_Exp() :
   List<Exp> le = new LinkedList<Exp>();
 }
 {
-   LOOKAHEAD(3)
-   e1 = nt_PrimaryExp() t2 = <OP>{
+   e1 = nt_PrimaryExp()( t2 = <OP>{
     switch(t2.image){ // AND("and"), LESSTHAN("<"), EQUALS("=="), DIV("div"), PLUS("+"), MINUS("-"), TIMES("*")
       case "and":
           op = ExpOp.Op.AND;
@@ -298,13 +296,10 @@ public Exp nt_Exp() :
           break;
     }
    }  e2 = nt_PrimaryExp() {return new ExpOp(e1, op, e2); }
-  |LOOKAHEAD(3)
-   e1 = nt_PrimaryExp() <OPENSBA> e2 = nt_Exp() <CLOSESBA> { return new ExpArrayLookup(e1, e2); }
-  | LOOKAHEAD(3)
-   e1 = nt_PrimaryExp() <DOT> <LENGTH> { return new ExpArrayLength(e1); }
-  | LOOKAHEAD(3)
-   e1 = nt_PrimaryExp() <DOT> t = <ID> <OPENRBA> le = nt_ExpList() <CLOSERBA> { return new ExpCall(e1, t.image, le);}
-  | e1 = nt_PrimaryExp() {return e1;} 
+  | <OPENSBA> e2 = nt_Exp() <CLOSESBA> { return new ExpArrayLookup(e1, e2); }
+  | <DOT> (<LENGTH> { return new ExpArrayLength(e1); }
+  | t = <ID> <OPENRBA> le = nt_ExpList() <CLOSERBA> { return new ExpCall(e1, t.image, le);} )
+  | {return e1;} )
 
 }
 
@@ -322,9 +317,8 @@ public Exp nt_PrimaryExp() :
   | <FALSE> { return new ExpFalse() ;}
   | v = nt_Var() {return new ExpVar(v); }
   | <SELF> { return new ExpSelf(); }
-  | LOOKAHEAD(2)
-    (<NEW> <ARRAYOF> <OPENRBA>(ty = nt_Type()) <CLOSERBA> <OPENSBA> (e = nt_Exp()) <CLOSESBA>) { return new ExpNewArray(ty, e); }
-  | (<NEW> <OBJECT> (t = <ID>) <OPENRBA> (le = nt_ExpList()) <CLOSERBA>) { return new ExpNewObject(t.image, le); }
+  | <NEW> ( <ARRAYOF> <OPENRBA>(ty = nt_Type()) <CLOSERBA> <OPENSBA> (e = nt_Exp()) <CLOSESBA> { return new ExpNewArray(ty, e); }
+    | <OBJECT> (t = <ID>) <OPENRBA> (le = nt_ExpList()) <CLOSERBA> { return new ExpNewObject(t.image, le); } )
   | (<NOT> (e = nt_PrimaryExp())) { return new ExpNot(e); }
   | (<ISNULL> (e= nt_PrimaryExp())) { return new ExpIsnull(e); }
   | <OPENRBA> e = nt_Exp() <CLOSERBA> {return e;}
@@ -345,7 +339,7 @@ public List<Exp> nt_ExpList() :
 }
 {
   ((e = nt_Exp(){le.add(e);}) (e=nt_ExpRest(){le.add(e);})*) {return le; }
-  | {return null;}
+  | {return le;}
 }
 
 public Exp nt_ExpRest() :
