@@ -270,8 +270,7 @@ public Exp nt_Exp() :
   List<Exp> le = new LinkedList<Exp>();
 }
 {
-   LOOKAHEAD(3)
-   e1 = nt_PrimaryExp() t2 = <OP>{
+   e1 = nt_PrimaryExp() (t2 = <OP>{
     switch(t2.image){ // AND("and"), LESSTHAN("<"), EQUALS("=="), DIV("div"), PLUS("+"), MINUS("-"), TIMES("*")
       case "and":
           op = ExpOp.Op.AND;
@@ -298,13 +297,10 @@ public Exp nt_Exp() :
           break;
     }
    }  e2 = nt_PrimaryExp() {return new ExpOp(e1, op, e2); }
-  |LOOKAHEAD(3)
-   e1 = nt_PrimaryExp() <OPENSBA> e2 = nt_Exp() <CLOSESBA> { return new ExpArrayLookup(e1, e2); }
-  | LOOKAHEAD(3)
-   e1 = nt_PrimaryExp() <DOT> <LENGTH> { return new ExpArrayLength(e1); }
-  | LOOKAHEAD(3)
-   e1 = nt_PrimaryExp() <DOT> t = <ID> <OPENRBA> le = nt_ExpList() <CLOSERBA> { return new ExpCall(e1, t.image, le);}
-  | e1 = nt_PrimaryExp() {return e1;} 
+  |  <OPENSBA> e2 = nt_Exp() <CLOSESBA> { return new ExpArrayLookup(e1, e2); }
+  | LOOKAHEAD(2) <DOT> <LENGTH> { return new ExpArrayLength(e1); }
+  | <DOT> t = <ID> <OPENRBA> le = nt_ExpList() <CLOSERBA> { return new ExpCall(e1, t.image, le);}
+  | {return e1;} )
 
 }
 
