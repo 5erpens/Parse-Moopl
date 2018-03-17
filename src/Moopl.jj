@@ -265,19 +265,46 @@ public List<Stm> nt_Block() :
 public Exp nt_Exp() :  
 {
   Exp e1, e2;
-  Token t, t2;
+  Token t,t2;
+  ExpOp.Op op = null;
   List<Exp> le = new LinkedList<Exp>();
 }
 {
    LOOKAHEAD(3)
-   ((e1 = nt_PrimaryExp()) (t2 = <OP>) (e2 = nt_PrimaryExp())) { return new ExpOp(e1, ExpOp.Op.valueOf(t2.image), e2); }
+   e1 = nt_PrimaryExp() t2 = <OP>{
+    switch(t2.image){ // AND("and"), LESSTHAN("<"), EQUALS("=="), DIV("div"), PLUS("+"), MINUS("-"), TIMES("*")
+      case "and":
+          op = ExpOp.Op.AND;
+          break;
+      case "<":
+          op = ExpOp.Op.LESSTHAN;
+          break;
+      case "==":
+          op = ExpOp.Op.EQUALS;
+          break;
+      case "div":
+          op = ExpOp.Op.DIV;
+          break;
+      case "+":
+          op = ExpOp.Op.PLUS;
+          break;
+      case "-":
+          op = ExpOp.Op.MINUS;
+          break;
+      case "*":
+          op = ExpOp.Op.TIMES;
+          break;
+      default:
+          break;
+    }
+   }  e2 = nt_PrimaryExp() {return new ExpOp(e1, op, e2); }
   |LOOKAHEAD(3)
-   ((e1 = nt_PrimaryExp()) <OPENSBA> (e2 = nt_Exp()) <CLOSESBA>) { return new ExpArrayLookup(e1, e2); }
+   e1 = nt_PrimaryExp() <OPENSBA> e2 = nt_Exp() <CLOSESBA> { return new ExpArrayLookup(e1, e2); }
   | LOOKAHEAD(3)
-   ((e1 = nt_PrimaryExp()) <DOT> <LENGTH>) { return new ExpArrayLength(e1); }
+   e1 = nt_PrimaryExp() <DOT> <LENGTH> { return new ExpArrayLength(e1); }
   | LOOKAHEAD(3)
-   ((e1 = nt_PrimaryExp()) <DOT> (t = <ID>) <OPENRBA> (le = nt_ExpList()) <CLOSERBA>) { return new ExpCall(e1, t.image, le);}
-  | nt_PrimaryExp() {} 
+   e1 = nt_PrimaryExp() <DOT> t = <ID> <OPENRBA> le = nt_ExpList() <CLOSERBA> { return new ExpCall(e1, t.image, le);}
+  | e1 = nt_PrimaryExp() {return e1;} 
 
 }
 
@@ -300,7 +327,7 @@ public Exp nt_PrimaryExp() :
   | (<NEW> <OBJECT> (t = <ID>) <OPENRBA> (le = nt_ExpList()) <CLOSERBA>) { return new ExpNewObject(t.image, le); }
   | (<NOT> (e = nt_PrimaryExp())) { return new ExpNot(e); }
   | (<ISNULL> (e= nt_PrimaryExp())) { return new ExpIsnull(e); }
-  | <OPENRBA> nt_Exp() <CLOSERBA>
+  | <OPENRBA> e = nt_Exp() <CLOSERBA> {return e;}
 }
 
 public Var nt_Var() :
