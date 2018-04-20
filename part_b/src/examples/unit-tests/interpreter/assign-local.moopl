@@ -1,0 +1,6 @@
+proc main() {
+  // print 99
+  int x;
+  x = 99;
+  output x;
+}

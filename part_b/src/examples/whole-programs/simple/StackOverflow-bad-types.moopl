@@ -1,0 +1,31 @@
+proc main() {
+  new object Doom().doom(1,2,3,4,5,6,7,8,9);
+}
+
+class Doom {
+  proc Doom() {}
+
+  proc doom(int a, int b, int c, int d, int e, int f, int g, int h, int i, int j) {
+    int x00;
+    int x01;
+    int x02;
+    int x03;
+    int x04;
+    int x05;
+    int x06;
+    int x07;
+    int x08;
+    int x09;
+    int x10;
+    int x11;
+    int x12;
+    int x13;
+    int x14;
+    int x15;
+    int x16;
+    int x17;
+    int x18;
+    int x19;
+    self.doom(a,b,c,d,e,f,g,h,i,j);
+  }
+}

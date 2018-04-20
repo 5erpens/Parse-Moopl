@@ -1,0 +1,20 @@
+proc main() {
+  Foo f;
+  Bar b;
+  // wrong number of actual parameters
+  f.foo();
+}
+
+class Foo {
+  fun int foo(int x, boolean b, Foo f) {
+    int res;
+    if ((x < 0) and b) then {
+      res = 1;
+    } else {
+      res = 99;
+    }
+    return res;
+  }
+}
+
+class Bar {}

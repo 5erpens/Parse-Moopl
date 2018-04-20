@@ -1,0 +1,7 @@
+proc main() {
+  // print 99 then 88
+  {
+    output 99;
+    output 88;
+  }
+}

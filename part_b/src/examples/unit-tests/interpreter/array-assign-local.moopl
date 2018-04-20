@@ -1,0 +1,7 @@
+proc main() {
+  // print 99
+  arrayof(int) a;
+  a = new arrayof(int)[1];
+  a[0] = 99;
+  output a[0];
+}

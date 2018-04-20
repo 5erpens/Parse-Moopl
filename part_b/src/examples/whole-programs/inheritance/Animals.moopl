@@ -1,0 +1,78 @@
+proc main() {
+  output new object AnimalTest(10).test();
+}
+
+proc test(int count) {
+  output new object AnimalTest(count).test();
+}
+
+/* In Java we would make this an abstract class. */
+class Animal {
+
+  fun int legsCount() {
+    return 1 div 0;
+    // In Java we would make this an abstract method with an empty body.
+    // Here we deliberately cause a runtime error in case we make a
+    // coding error and fail to override legsCount in a descendant class.
+  }
+}
+
+class Human extends Animal {
+  proc Human() {}
+  fun int legsCount() { return 2; }
+}
+
+class Dog extends Animal {
+  proc Dog() {}
+  fun int legsCount() { return 4; }
+}
+
+class Snake extends Animal {
+  proc Snake() {}
+  fun int legsCount() { return 0; }
+}
+
+class AnimalTest {
+
+  int n;
+
+  proc AnimalTest(int n_) {
+    n = n_;
+  }
+
+  fun int test() {
+    arrayof(Animal) animals;
+    animals = new arrayof(Animal)[5];
+    animals[0] = new object Snake();
+    animals[1] = new object Human();
+    animals[2] = new object Dog();
+    animals[3] = new object Snake();
+    animals[4] = new object Dog();
+    arrayof(Animal) lotsOfAnimals;
+    lotsOfAnimals = new arrayof(Animal)[(animals.length) * n];
+    {
+      int i;
+      i = 0;
+      while (i < (lotsOfAnimals.length)) do {
+        int j;
+        j = 0;
+        while (j < (animals.length)) do {
+          lotsOfAnimals[i + j] = animals[j];
+          j = j + 1;
+        }
+        i = i + (animals.length);
+      }
+    }
+    int sum;
+    sum = 0;
+    {
+      int i;
+      i = 0;
+      while (i < (lotsOfAnimals.length)) do {
+        sum = sum + ((lotsOfAnimals[i]).legsCount());
+        i = i + 1;
+      }
+    }
+    return sum;
+  }
+}

@@ -1,0 +1,6 @@
+proc main() {
+  // print 0
+  arrayof(int) a;
+  a = new arrayof(int)[1];
+  output a[0];
+}

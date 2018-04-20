@@ -1,0 +1,5 @@
+proc main(arrayof(int) a) {
+  boolean x;
+      // wrong element type for assignment to x
+  x = a[1];
+}

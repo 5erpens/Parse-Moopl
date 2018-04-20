@@ -1,0 +1,4 @@
+proc main() {
+  // print 99
+  output 99;
+}

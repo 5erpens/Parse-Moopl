@@ -1,0 +1,5 @@
+proc main(arrayof(int) a) {
+  int x;
+      // not an array
+  x = 3[1];
+}

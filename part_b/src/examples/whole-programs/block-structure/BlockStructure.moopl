@@ -1,0 +1,30 @@
+// Should output 0
+proc main() {
+  output new object BlockStructure().foo();
+}
+
+class BlockStructure {
+  BlockStructure bs;
+
+  proc BlockStructure() {}
+
+  fun int foo() {
+    int z; z = 99;
+    int i; i = 7;
+    {
+      int i; i = 2*z;
+      z = 2*i;
+    }
+    z = z-i;
+    {
+      int j; j = z;
+      {
+        int z; z = j;
+        j = z - 1;
+      }
+      int i; i = 2*j;
+      z = i;
+    }
+    return 769 - (z - i);
+  }
+}
