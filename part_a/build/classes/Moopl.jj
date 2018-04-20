@@ -1,0 +1,355 @@
+options {
+  STATIC = false;
+}
+
+PARSER_BEGIN(MooplParser)
+  import syntaxtree.*;
+  import syntaxtree.interp.*;
+  import java.util.List;
+  import java.util.LinkedList;
+  public class MooplParser {
+  }
+PARSER_END(MooplParser)
+
+SKIP : /* Define white-space and comments here */
+{
+    " "
+  | "\t"
+  | "\n"
+  | "\r"
+  | "\f"
+  | < "//" (~["\n","\r"])* ("\n"|"\r"|"\r\n") >
+  | <"/*" (~["*"])* "*" ("*" | (~["*","/"] (~["*"])* "*"))* "/">
+}
+
+TOKEN : /* Define the Moopl tokens here. */
+{
+  < PROC: "proc" >
+| < FUN: "fun" >
+| < CLASS: "class" >
+| < TRUE: "true" >
+| < FALSE: "false" >
+| < EXTENDS: "extends" >
+| < RETURN: "return" >
+| < ARRAYOF: "arrayof" >
+| < BOOLEAN: ("true" | "false") >
+| < INT: "int" >
+| < IF: "if" >
+| < THEN: "then" >
+| < ELSE: "else" >
+| < WHILE: "while" >
+| < DO: "do" >
+| < OUTPUT: "output" >
+| < LENGTH: "length" >
+| < SELF: "self" >
+| < NEW: "new" >
+| < OBJECT: "object" >
+| < ISNULL: "isnull" >
+//need to look at later
+| < OP: ("and" | "<" | "==" | "div" | "+" | "-" | "*" ) >
+| < OPENCBA: "{" >
+| < CLOSECBA: "}" >
+| < OPENRBA: "(" >
+| < CLOSERBA: ")" >
+| < OPENSBA: "[" >
+| < CLOSESBA: "]" >
+| < SEMICOL: ";" >
+| < COMMA: "," >
+| < EQUAL: "=" >
+| < NOT: "!" >
+| < DOT: "." >
+
+// LOTS OF TOKENS MISSING HERE!
+
+| < INTEGER_LITERAL: (["0"-"9"])+ >
+| < ID: ["a"-"z","A"-"Z"](["a"-"z","A"-"Z","0"-"9","_"])* >
+}
+
+/*
+ * TOKEN tester
+ */
+public void testTokens() :
+{
+  Token t;
+}
+{
+  ( ( ( t = <PROC>
+      | t = <FUN>
+      | t = <CLASS>
+      | t = <TRUE>
+      | t = <FALSE>
+      | t = <EXTENDS>
+      | t = <RETURN>
+      | t = <ARRAYOF>
+      | t = <BOOLEAN>
+      | t = <INT>
+      | t = <IF>
+      | t = <THEN>
+      | t = <ELSE>
+      | t = <WHILE>
+      | t = <DO>
+      | t = <OUTPUT>
+      | t = <LENGTH>
+      | t = <SELF>
+      | t = <NEW>
+      | t = <OBJECT>
+      | t = <ISNULL>
+      | t = <OP>
+      | t = <OPENCBA>
+      | t = <CLOSECBA>
+      | t = <OPENRBA>
+      | t = <CLOSERBA>
+      | t = <OPENSBA>
+      | t = <CLOSESBA>
+      | t = <SEMICOL>
+      | t = <COMMA>
+      | t = <EQUAL>
+      | t = <NOT>
+      | t = <DOT>
+        // ADD YOUR OWN TOKENS HERE AS YOU DEFINE EACH ONE
+      )
+      { System.out.println("Recognised as valid token: " + t.image); }
+    )
+  | ( t = <INTEGER_LITERAL>
+      { System.out.println("Recognised as INTEGER_LITERAL: " + t.image); }
+    )
+  | ( t = <ID>
+      { System.out.println("Recognised as ID: " + t.image); }
+    )
+  )*
+}
+
+
+/************************************
+ * The Moopl grammar starts here *
+ ************************************/
+
+
+public Program nt_Program() :
+{
+  ClassDecl cd;
+  ProcDecl pd;
+  List<ProcDecl> l1 = new LinkedList<ProcDecl>();
+  List<ClassDecl> l2 = new LinkedList<ClassDecl>();
+}
+{
+  (pd=nt_ProcDecl(){l1.add(pd);}) ((pd =nt_ProcDecl() {l1.add(pd);} )* (cd=nt_ClassDecl() {l2.add(cd); })*) { return new Program(l1,l2);}
+}
+
+public ClassDecl nt_ClassDecl() :
+{
+  Token t1,t2;
+  FieldDecl fd;
+  MethodDecl md;
+  List<FieldDecl> l1 = new LinkedList<FieldDecl>();
+  List<MethodDecl> l2 = new LinkedList<MethodDecl>();
+}
+{ 
+  <CLASS> t1=<ID> (<OPENCBA> (fd=nt_FieldDecl(){l1.add(fd);})* (md=nt_MethodDecl(){l2.add(md);})* <CLOSECBA>{return new ClassDeclSimple(t1.image,l1,l2);}
+  | <EXTENDS> t2=<ID> <OPENCBA> (fd=nt_FieldDecl(){l1.add(fd);})* (md=nt_MethodDecl(){l2.add(md);})* <CLOSECBA>{return new ClassDeclExtends(t1.image,t2.image,l1,l2);} )
+} 
+
+
+//added
+public FieldDecl nt_FieldDecl() :
+{
+  Token t;
+  Type ty;
+}
+{
+   (ty=nt_Type()) (t = <ID>) <SEMICOL> {return new FieldDecl(ty,t.image);}
+}
+
+public MethodDecl nt_MethodDecl() :
+{
+  MethodDecl md;
+}
+{
+  md = nt_ProcDecl(){ return md; }
+  |md = nt_FunDecl() { return md; }
+}
+
+public ProcDecl nt_ProcDecl() :
+{
+  Token t;
+  Stm s;
+  Formal f;
+  List<Stm> l1 = new LinkedList<Stm>();
+  List<Formal> l2 = new LinkedList<Formal>();
+}
+{
+   <PROC> (t=<ID> <OPENRBA> l2=nt_FormalList() <CLOSERBA> <OPENCBA> (s =nt_Statement(){l1.add(s);})* <CLOSECBA>) {return new ProcDecl(t.image,l2,l1);}
+}
+
+public FunDecl nt_FunDecl() :
+{
+  Token t;
+  Stm s;
+  Type ty;
+  Exp e;
+  List<Stm> l1 = new LinkedList<Stm>();
+  List<Formal> l2 = new LinkedList<Formal>();
+}
+{
+  (<FUN> (ty =nt_Type()) (t=<ID>) <OPENRBA> l2=nt_FormalList() <CLOSERBA> <OPENCBA> (s =nt_Statement(){l1.add(s);})* <RETURN> (e = nt_Exp()) <SEMICOL> <CLOSECBA>){return new FunDecl(ty, t.image,l2,l1, e);}
+}
+
+public List<Formal> nt_FormalList() :
+{
+  Type ty;
+  Token t;
+  List<Formal> l = new LinkedList<Formal>();
+  Formal f;
+}
+{
+   (((ty=nt_Type()) (t=<ID>)){l.add(new Formal(ty,t.image));} (f = nt_FormerRest(){l.add(f);})*) {return l;}
+   | {return l;}
+}
+
+public Formal nt_FormerRest() :
+{
+  Token t;
+  Type ty;
+}
+{
+   <COMMA> ((ty=nt_Type()) (t=<ID>)){ return new Formal(ty,t.image); }
+}
+
+public Type nt_Type() :
+{
+  Token t;
+  Type ty;
+}
+{
+  (<ARRAYOF> <OPENRBA> ty=nt_Type() <CLOSERBA>) {return new TypeArray(ty); }
+  | <BOOLEAN>{ return new TypeBoolean(); }
+  | <INT> { return new TypeInt(); }
+  | t = <ID> { return new TypeClassType(t.image);}
+}
+
+public Stm nt_Statement() :
+{
+  Type ty;
+  Var v;
+  Exp e, e2, e3;
+  Token t;
+  List<Stm> ls = new LinkedList<Stm>();
+  List<Stm> ls2 = new LinkedList<Stm>();
+  List<Exp> le = new LinkedList<Exp>();
+}
+{
+  (ls=nt_Block()){return new StmBlock(ls);} 
+  | LOOKAHEAD(2)
+    ((ty=nt_Type()) (t=<ID>) <SEMICOL>){ return new StmVarDecl(ty,t.image);}
+  | LOOKAHEAD(2) 
+    ((v=nt_Var()) <EQUAL> (e=nt_Exp()) <SEMICOL>){return new StmAssign(v,e);}
+  | (e = nt_PrimaryExp()) (<OPENSBA> (e2 = nt_Exp()) <CLOSESBA> <EQUAL> (e3 = nt_Exp()) <SEMICOL> {return new StmArrayAssign(e,e2,e3);}
+  |  <DOT> (t = <ID>) <OPENRBA> (le = nt_ExpList()) <CLOSERBA> <SEMICOL>  {return new StmCall(e,t.image,le); } )
+  | (<IF> <OPENRBA> (e = nt_Exp()) <CLOSERBA> <THEN> (ls = nt_Block()) <ELSE> (ls2 = nt_Block())) {return new StmIf(e,new StmBlock(ls),new StmBlock(ls2)); }
+  | (<WHILE> <OPENRBA> (e = nt_Exp()) <CLOSERBA> <DO> (ls = nt_Block())) {return new StmWhile(e, new StmBlock(ls)); }
+  | (<OUTPUT> (e = nt_Exp()) <SEMICOL>) { return new StmOutput(e); }
+}
+
+public List<Stm> nt_Block() :
+{
+  Stm s;
+  List<Stm> ls= new LinkedList<Stm>();
+}
+{
+  (<OPENCBA> (s=nt_Statement(){ls.add(s);})* <CLOSECBA>) {return ls;}
+}
+
+public Exp nt_Exp() :  
+{
+  Exp e1, e2;
+  Token t,t2;
+  ExpOp.Op op = null;
+  List<Exp> le = new LinkedList<Exp>();
+}
+{
+   e1 = nt_PrimaryExp()( t2 = <OP>{
+    switch(t2.image){ // AND("and"), LESSTHAN("<"), EQUALS("=="), DIV("div"), PLUS("+"), MINUS("-"), TIMES("*")
+      case "and":
+          op = ExpOp.Op.AND;
+          break;
+      case "<":
+          op = ExpOp.Op.LESSTHAN;
+          break;
+      case "==":
+          op = ExpOp.Op.EQUALS;
+          break;
+      case "div":
+          op = ExpOp.Op.DIV;
+          break;
+      case "+":
+          op = ExpOp.Op.PLUS;
+          break;
+      case "-":
+          op = ExpOp.Op.MINUS;
+          break;
+      case "*":
+          op = ExpOp.Op.TIMES;
+          break;
+      default:
+          break;
+    }
+   }  e2 = nt_PrimaryExp() {return new ExpOp(e1, op, e2); }
+  | <OPENSBA> e2 = nt_Exp() <CLOSESBA> { return new ExpArrayLookup(e1, e2); }
+  | <DOT> (<LENGTH> { return new ExpArrayLength(e1); }
+  | t = <ID> <OPENRBA> le = nt_ExpList() <CLOSERBA> { return new ExpCall(e1, t.image, le);} )
+  | {return e1;} )
+
+}
+
+public Exp nt_PrimaryExp() :
+{
+  Var v;
+  Token t;
+  Exp e;
+  Type ty;
+  List<Exp> le = new LinkedList<Exp>();
+}
+{
+  t = <INTEGER_LITERAL> {return new ExpInteger(Integer.parseInt(t.image)); }
+  | <TRUE> { return new ExpTrue() ;}
+  | <FALSE> { return new ExpFalse() ;}
+  | v = nt_Var() {return new ExpVar(v); }
+  | <SELF> { return new ExpSelf(); }
+  | <NEW> ( <ARRAYOF> <OPENRBA>(ty = nt_Type()) <CLOSERBA> <OPENSBA> (e = nt_Exp()) <CLOSESBA> { return new ExpNewArray(ty, e); }
+    | <OBJECT> (t = <ID>) <OPENRBA> (le = nt_ExpList()) <CLOSERBA> { return new ExpNewObject(t.image, le); } )
+  | (<NOT> (e = nt_PrimaryExp())) { return new ExpNot(e); }
+  | (<ISNULL> (e= nt_PrimaryExp())) { return new ExpIsnull(e); }
+  | <OPENRBA> e = nt_Exp() <CLOSERBA> {return e;}
+}
+
+public Var nt_Var() :
+{
+  Token t;
+}
+{
+  (t=<ID>){return new Var(t.image);}
+}
+
+public List<Exp> nt_ExpList() :
+{
+  Exp e;
+  List<Exp> le = new LinkedList<Exp>(); 
+}
+{
+  ((e = nt_Exp(){le.add(e);}) (e=nt_ExpRest(){le.add(e);})*) {return le; }
+  | {return le;}
+}
+
+public Exp nt_ExpRest() :
+{
+  Exp e;
+}
+{
+   <COMMA> ((e = nt_Exp())) {return e; } 
+}
+
+public void eof() :
+{}
+{
+  <EOF>
+}

@@ -1,0 +1,290 @@
+options {
+  STATIC = false;
+}
+
+PARSER_BEGIN(MooplParser)
+  import syntaxtree.*;
+  import syntaxtree.interp.*;
+  import java.util.List;
+  import java.util.LinkedList;
+  public class MooplParser {
+  }
+PARSER_END(MooplParser)
+
+SKIP : /* Define white-space and comments here */
+{
+    " "
+  | "\t"
+  | "\n"
+  | "\r"
+  | "\f"
+  | < "//" (~["\n","\r"])* ("\n"|"\r"|"\r\n") >
+  | <"/*" (~["*"])* "*" ("*" | (~["*","/"] (~["*"])* "*"))* "/">
+}
+
+TOKEN : /* Define the Moopl tokens here. */
+{
+  < PROC: "proc" >
+| < FUN: "fun" >
+| < CLASS: "class" >
+| < TRUE: "true" >
+| < FALSE: "false" >
+| < EXTENDS: "extends" >
+| < RETURN: "return" >
+| < ARRAYOF: "arrayof" >
+| < BOOLEAN: ("true" | "false") >
+| < INT: "int" >
+| < IF: "if" >
+| < THEN: "then" >
+| < ELSE: "else" >
+| < WHILE: "while" >
+| < DO: "do" >
+| < OUTPUT: "output" >
+| < LENGTH: "length" >
+| < SELF: "self" >
+| < NEW: "new" >
+| < OBJECT: "object" >
+| < ISNULL: "isnull" >
+| < OP: ("and" | "<" | "==" | "div" | "+" | "-" | "*" ) >
+| < OPENCBA: "{" >
+| < CLOSECBA: "}" >
+| < OPENRBA: "(" >
+| < CLOSERBA: ")" >
+| < OPENSBA: "[" >
+| < CLOSESBA: "]" >
+| < SEMICOL: ";" >
+| < COMMA: "," >
+| < EQUAL: "=" >
+| < NOT: "!" >
+| < DOT: "." >
+
+// LOTS OF TOKENS MISSING HERE!
+
+| < INTEGER_LITERAL: (["0"-"9"])+ >
+| < ID: ["a"-"z","A"-"Z"](["a"-"z","A"-"Z","0"-"9","_"])* >
+}
+
+/*
+ * TOKEN tester
+ */
+public void testTokens() :
+{
+  Token t;
+}
+{
+  ( ( ( t = <PROC>
+      | t = <FUN>
+      | t = <CLASS>
+      | t = <TRUE>
+      | t = <FALSE>
+      | t = <EXTENDS>
+      | t = <RETURN>
+      | t = <ARRAYOF>
+      | t = <BOOLEAN>
+      | t = <INT>
+      | t = <IF>
+      | t = <THEN>
+      | t = <ELSE>
+      | t = <WHILE>
+      | t = <DO>
+      | t = <OUTPUT>
+      | t = <LENGTH>
+      | t = <SELF>
+      | t = <NEW>
+      | t = <OBJECT>
+      | t = <ISNULL>
+      | t = <OP>
+      | t = <OPENCBA>
+      | t = <CLOSECBA>
+      | t = <OPENRBA>
+      | t = <CLOSERBA>
+      | t = <OPENSBA>
+      | t = <CLOSESBA>
+      | t = <SEMICOL>
+      | t = <COMMA>
+      | t = <EQUAL>
+      | t = <NOT>
+      | t = <DOT>
+        // ADD YOUR OWN TOKENS HERE AS YOU DEFINE EACH ONE
+      )
+      { System.out.println("Recognised as valid token: " + t.image); }
+    )
+  | ( t = <INTEGER_LITERAL>
+      { System.out.println("Recognised as INTEGER_LITERAL: " + t.image); }
+    )
+  | ( t = <ID>
+      { System.out.println("Recognised as ID: " + t.image); }
+    )
+  )*
+}
+
+
+/************************************
+ * The Moopl grammar starts here *
+ ************************************/
+
+
+public void nt_Program() :
+{ ClassDecl cd;
+  ProcDecl pd;
+  List<ProcDecl> l1 = new LinkedList<ProcDecl>();
+  List<ClassDecl> l2 = new LinkedList<ClassDecl>();
+}
+{ 
+  (nt_ProcDecl() (cd =nt_ProcDecl() {l1.add(pd);} )* (pd=nt_ClassDecl() {l2.add(cd); })*) { return new Program(l1,l2);}
+}
+
+public void nt_ClassDecl() :
+{
+  Token t1,t2;
+  FieldDecl fd;
+  MethodDecl md;
+  List<FieldDecl> l1 = new LinkedList<FieldDecl>();
+  List<MethodDecl> l2 = new LinkedList<MethodDecl>();
+}
+{ 
+  LOOKAHEAD(2)
+  <CLASS> (t1=<ID> {return new Var(t.image);} <OPENCBA> (fd=nt_FieldDecl(){l1.add(fd);})* (md=nt_MethodDecl(){l2.add(fd);})* <CLOSECBA>){return new ClassDeclSimple(t1,l1,l2);}
+  |<CLASS> (t1=<ID> {return new Var(t.image);} <EXTENDS> t2=<ID>{return new Var(t.image);} <OPENCBA> (fd=nt_FieldDecl(){l1.add(fd);})* (md=nt_MethodDecl(){l2.add(md);})* <CLOSECBA>){return new ClassDeclSimple(t1,t2,l1,l2);}
+}
+
+//added
+public void nt_FieldDecl() :
+{
+  Token t;
+}
+{
+   (nt_Type()) t=<ID> {return new Var(t.image);}<SEMICOL>
+}
+
+public void nt_MethodDecl() :
+{}
+{
+  nt_ProcDecl() 
+  | nt_FunDecl()
+}
+
+public void nt_ProcDecl() :
+{}
+{
+  
+}
+
+public void nt_FunDecl() :
+{}
+{
+  <FUN> nt_Type() <ID> {return new Var(t.image);}<OPENRBA> nt_FormalList() <CLOSERBA> <OPENCBA> (nt_Statement())* <RETURN> nt_Exp() <SEMICOL> <CLOSECBA>
+}
+
+public void nt_FormalList() :
+{}
+{
+   nt_Type() <ID> {return new Var(t.image);}(nt_FormerRest())*
+   | {}
+}
+
+public void nt_FormerRest() :
+{}
+{
+   <COMMA> nt_Type() <ID> {return new Var(t.image);}
+}
+
+public void nt_Type() :
+{}
+{
+  <ARRAYOF> <OPENRBA> nt_Type() <CLOSERBA>
+  | <BOOLEAN>
+  | <INT>
+  | <ID> {return new Var(t.image);}
+}
+
+public void nt_Statement() :
+{}
+{
+  nt_Block() 
+  | LOOKAHEAD(2)
+    nt_Type() <ID> {return new Var(t.image);} <SEMICOL>
+  | LOOKAHEAD(2) 
+    nt_Var() <EQUAL> nt_Exp() <SEMICOL>
+  | LOOKAHEAD(2) 
+    nt_PrimaryExp() ((<OPENSBA> nt_Exp() <CLOSESBA> <EQUAL> nt_Exp() <SEMICOL>) | (<DOT> <ID> <OPENRBA> nt_ExpList() <CLOSERBA> <SEMICOL>))
+  | <IF> <OPENRBA> nt_Exp() <CLOSERBA> <THEN> nt_Block() <ELSE> nt_Block()
+  | <WHILE> <OPENRBA> nt_Exp() <CLOSERBA> <DO> nt_Block()
+  | <OUTPUT> nt_Exp() <SEMICOL>
+}
+
+public void nt_Block() :
+{}
+{
+  <OPENCBA> (nt_Statement())* <CLOSECBA>
+}
+
+public void nt_Exp() :
+{}
+{
+  nt_PrimaryExp() nt_Exp2()
+}
+
+public void nt_Exp2() :
+{}
+{
+  <OP> {
+
+  }nt_PrimaryExp()
+  | <OPENSBA> nt_Exp() <CLOSESBA>
+  | <DOT> nt_Exp3()
+  | {}
+}
+
+public void nt_Exp3() :
+{}
+{
+  <LENGTH>
+  | <ID> <OPENRBA> nt_ExpList() <CLOSERBA>
+}
+
+public void nt_PrimaryExp() :
+{
+  Token t;
+  Exp e;
+}
+{
+ t = <INTEGER_LITERAL> {return new ExpInteger(Integer.parseInt(t.image)); }
+  | <TRUE> {return Exptrue(); }
+  | <FALSE> {return ExpFalse(); }
+  | nt_Var()
+  | <SELF> { return ExpSelf(); }
+  | LOOKAHEAD(2)
+    <NEW> <ARRAYOF> <OPENRBA> nt_Type() <CLOSERBA> <OPENSBA> nt_Exp() <CLOSESBA>
+  | <NEW> <OBJECT> <ID>{ return new Var(t.image); } <OPENRBA> nt_ExpList() <CLOSERBA>
+  | <NOT> { return ExpNot(e.image); } nt_PrimaryExp()
+  | <ISNULL> nt_PrimaryExp()
+  | <OPENRBA> nt_Exp() <CLOSERBA>
+}
+
+public void nt_Var() :
+{
+  Token t;
+}
+{
+  t = <ID>{return new Var(t.image);}
+}
+
+public void nt_ExpList() :
+{}
+{
+  nt_Exp() (nt_ExpRest())*
+  | {}
+}
+
+public void nt_ExpRest() :
+{}
+{
+  <COMMA> nt_Exp() 
+}
+
+public void eof() :
+{}
+{
+  <EOF>
+}
