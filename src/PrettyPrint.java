@@ -22,7 +22,7 @@ public class PrettyPrint {
                 }
             }
             // Uncomment next line if you want to use the pretty printer
-            parser.nt_Program().accept(new PrettyPrinter());
+           // parser.nt_Program().accept(new PrettyPrinter());
         } catch (Throwable e) {
             // System.out.println(e.toString());
             e.printStackTrace();

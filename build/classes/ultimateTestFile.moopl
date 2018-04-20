@@ -1,0 +1,478 @@
+
+proc test(int x) {
+  Counter counter;
+  counter = new object Counter();
+  int i;
+  i = 0;
+  while (i < x) do {
+    counter.click();
+    i = i + 1;
+  }
+}
+
+proc main(int x) {
+  Factorial f;
+  f = new object Factorial();
+  output f.factorial(x);
+}
+
+proc main() {
+  Dummy d;
+  d = new object Dummy();
+  (d.null()).foo();
+}
+
+proc main() {
+  arrayof(int) a;
+  a = new arrayof(int)[5];
+  a[0] = 9;
+  a[1] = 1;
+  a[2] = 3;
+  a[3] = 7;
+  a[4] = 5;
+  Quicksort qs;
+  qs = new object Quicksort();
+  qs.sort(a);
+  int i;
+  i = 0;
+  while (i < (a.length)) do {
+    output a[i];
+    i = i + 1;
+  }
+}
+
+proc main() {
+  new object Doom().doom(1,2,3,4,5,6,7,8,9,0);
+}
+
+proc test(int age, int salary, boolean married) {
+   List l;
+   l = new object List();
+   output l.size();
+   BigElement e;
+   e = new object BigElement(1, 2, false);
+   l.insert(e);
+   e = new object BigElement(1, 2, true);
+   l.insert(e);
+   e = new object BigElement(1, 2, false);
+   l.insert(e);
+   e = new object BigElement(2, 3, true);
+   l.insert(e);
+   output l.size();
+   output l.count(new object BigElement(age, salary, married));
+}
+
+proc varTest(int size) {
+   List list;
+   list = new object List();
+   int n;
+   n = 0;
+   while (n < size) do {
+      list.insert(new object BigElement(n, 2*n, (n div 2) == 0));
+      n = n + 1;
+   }
+   output list.size();
+}
+
+proc main(int count) {
+  output new object AnimalTest(count).test();
+}
+
+proc main(){
+    int lol;
+    if (isnull lol) then {
+        lol = 0;
+    } else {
+
+    }
+    lol = lol + 1;
+    Dog dog;
+    dog = new object Dog();
+}
+proc cat(int num, int you, String name){
+    int lol;
+    lol = lol + 1;
+
+   
+}
+class Dog extends Animal {
+    
+    arrayof(int) feetSize;
+    String favToy;
+    proc Dog(){
+        feetSize = new arrayof(int)[(4)];
+    }
+
+    proc bark(int num){
+        int lol;
+        lol = lol + 1;
+        {
+            int i;
+            i=0;
+            if (!alive) then {
+
+            } else {
+                while(num) do {
+                    i = i + 1;
+                    output i *((1+1)-1);
+                }
+            }
+        }
+    }
+    fun int getLeftFrontFootSize(){
+        return feetSize[1];
+    }
+    fun int getRightFrontFootSize(){
+        return feetSize[2];
+    }
+    fun int getLeftBackFootSize(){
+        return feetSize[3];
+    }
+    fun int getRightBackFootSize(){
+        return feetSize[4];
+    }
+    proc setLeftFrontFootSize(int size){
+         feetSize[1] = size;
+    }
+    proc setRightFrontFootSize(int size){
+         feetSize[2] = size;
+    }
+    proc setLeftBackFootSize(int size){
+         feetSize[3] = size;
+    }
+    proc setRightBackFootSize(int size){
+         feetSize[4] = size;
+    }
+    fun int numOfFeet(){
+        return feetSize.length;
+    }
+}
+class Animal  {
+    String name;
+    int age;
+    boolean alive;
+    proc kill(){
+        alive = false;
+    }
+    proc setName(String newName){
+        if ((self.getName()) == newName) then {
+
+        } else {
+            name = newName;
+        }
+    }
+    fun String getName(){
+
+        return name;
+    }
+}
+
+class Element {
+
+    int age;
+
+    proc Element(int age_) {
+        age = age_;
+    }
+
+    fun int getAge() {
+        return age;
+    }
+}
+
+class BigElement extends Element {
+
+    int salary;
+    boolean married;
+
+    // initialize class variables
+    proc BigElement(int v_age, int v_salary, boolean v_married) {
+        self.Element(v_age); // initialising inherited age field
+        salary = v_salary;
+        married = v_married;
+    }
+
+    fun int getSalary() {
+        return salary;
+    }
+
+    fun boolean getMarried() {
+        return married;
+    }
+
+    // This method returns true if the object "other"
+    // has the same values for age, salary and married
+    fun boolean equals(BigElement other) {
+        boolean result;
+        result = (other.getAge()) == age;
+        result = result and ((other.getSalary()) == salary);
+        result = result and ((other.getMarried()) == married);
+        return result;
+    }
+}
+
+class List {
+
+    BigElement elem;
+    List next;
+    boolean empty;
+
+    // Initialize as an empty list
+    proc List() {
+        empty = true;
+    }
+
+    fun BigElement getElem() {
+        return elem;
+    }
+
+    fun List getNext() {
+        return next;
+    }
+
+    fun boolean isEmpty() {
+        return empty;
+    }
+
+    proc insert(BigElement e) {
+        List newNode;
+        newNode = new object List();
+        if (!empty) then {
+            newNode.setElem(elem);
+            newNode.setNext(next);
+        } else {
+        }
+        elem = e;
+        next = newNode;
+        empty = false;
+    }
+
+    proc setElem(BigElement e) {
+        elem = e;
+        empty = false;
+    }
+
+    proc setNext(List l) {
+        next = l;
+        empty = false;
+    }
+
+    fun int size() {
+        int n;
+        n = 0;
+        List rest;
+        rest = self;
+        while (!(rest.isEmpty())) do {
+            n = n + 1;
+            rest = rest.getNext();
+        }
+        return n;
+    }
+
+    fun int count(BigElement e) {
+        List rest;
+        rest = self;
+        int count;
+        count = 0;
+        while (!(rest.isEmpty())) do {
+            if (e.equals(rest.getElem())) then {
+                count = count + 1;
+            } else {}
+            rest = rest.getNext();
+        }
+        return count;
+    }
+
+}
+
+
+/* In Java we would make this an abstract class. */
+class Animal {
+
+  fun int legsCount() {
+    return 1 div 0;
+    // In Java we would make this an abstract method with an empty body.
+    // Here we deliberately cause a runtime error in case we make a
+    // coding error and fail to override legsCount in a descendant class.
+  }
+}
+
+class Human extends Animal {
+  proc Human() {}
+  fun int legsCount() { return 2; }
+}
+
+class Dog extends Animal {
+  proc Dog() {}
+  fun int legsCount() { return 4; }
+}
+
+class Snake extends Animal {
+  proc Snake() {}
+  fun int legsCount() { return 0; }
+}
+
+class AnimalTest {
+
+  int n;
+
+  proc AnimalTest(int n_) {
+    n = n_;
+  }
+
+  fun int test() {
+    arrayof(Animal) animals;
+    animals = new arrayof(Animal)[5];
+    animals[0] = new object Snake();
+    animals[1] = new object Human();
+    animals[2] = new object Dog();
+    animals[3] = new object Snake();
+    animals[4] = new object Dog();
+    arrayof(Animal) lotsOfAnimals;
+    lotsOfAnimals = new arrayof(Animal)[(animals.length) * n];
+    {
+      int i;
+      i = 0;
+      while (i < (lotsOfAnimals.length)) do {
+        int j;
+        j = 0;
+        while (j < (animals.length)) do {
+          lotsOfAnimals[i + j] = animals[j];
+          j = j + 1;
+        }
+        i = i + (animals.length);
+      }
+    }
+    int sum;
+    sum = 0;
+    {
+      int i;
+      i = 0;
+      while (i < (lotsOfAnimals.length)) do {
+        sum = sum + ((lotsOfAnimals[i]).legsCount());
+        i = i + 1;
+      }
+    }
+    return sum;
+  }
+}
+
+
+class Doom {
+  proc Doom() {}
+
+  proc doom(int a, int b, int c, int d, int e, int f, int g, int h, int i, int j) {
+    int x00;
+    int x01;
+    int x02;
+    int x03;
+    int x04;
+    int x05;
+    int x06;
+    int x07;
+    int x08;
+    int x09;
+    int x10;
+    int x11;
+    int x12;
+    int x13;
+    int x14;
+    int x15;
+    int x16;
+    int x17;
+    int x18;
+    int x19;
+    self.doom(a,b,c,d,e,f,g,h,i,j);
+  }
+}
+
+/* See Wikipedia page for the quicksort algorithm. */
+
+
+class Quicksort {
+  proc Quicksort() {}
+
+  proc sort(arrayof(int) a) {
+    self.quicksort(a, 0, (a.length) - 1);
+  }
+
+  proc quicksort(arrayof(int) a, int lo, int hi) {
+    if (lo < hi) then {
+      int p;
+      p = self.partition(a, lo, hi);
+      self.quicksort(a, lo, p - 1);
+      self.quicksort(a, p + 1, hi);
+    } else {}
+  }
+
+  fun int partition(arrayof(int) a, int lo, int hi) {
+    int pivot;
+    pivot = a[hi];
+    int i;
+    i = lo; // place for swapping
+    int j;
+    j = lo;
+    while (j < hi) do {
+      if ((a[j]) < (pivot + 1)) then {
+        self.swap(a, i, j);
+        i = i + 1;
+      } else {}
+      j = j + 1;
+    }
+    self.swap(a, i, hi);
+    return i;
+  }
+
+  proc swap(arrayof(int) a, int i, int j) {
+    int x;
+    x = a[i];
+    a[i] = a[j];
+    a[j] = x;
+  }
+}
+
+
+class Dummy {
+  Dummy null;
+  proc Dummy() {}
+  fun Dummy null() { return null; }
+  proc foo() {}
+}
+
+
+class Factorial {
+
+    proc Factorial() {}
+
+    fun int factorial(int x) {
+        int result;
+        if (x < 1) then {
+            result = 1;
+        } else {
+            result = x * (self.factorial(x - 1));
+        }
+        return result;
+    }
+}
+
+
+class Counter {
+
+  int count;
+
+  proc Counter() {
+    count = 0;
+  }
+
+  proc click() {
+    count = count + 1;
+    output self.getCount();
+  }
+
+  fun int getCount() {
+    return count;
+  }
+
+}
+
+
