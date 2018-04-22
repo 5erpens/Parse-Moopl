@@ -98,6 +98,7 @@ public class Interpreter extends VisitorAdapter<Integer> {
             s.b2.accept(this);
         }
         return null;
+        
     }
 
     @Override
@@ -213,8 +214,9 @@ public class Interpreter extends VisitorAdapter<Integer> {
         MethodDecl mdl = symTab.getClassSignature(mooplRunTime.deref(acc).type.toString()).getMethodSignature(n.id).getMethodDecl();
         mooplRunTime.pushFrame(acc, list, mdl.stackAllocation);
        
+        int i = mdl.accept(this);
         mooplRunTime.popFrame();
-        return mdl.accept(this);
+        return i;
     }
 
     @Override
