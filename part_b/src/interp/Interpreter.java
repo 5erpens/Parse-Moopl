@@ -277,8 +277,8 @@ public class Interpreter extends VisitorAdapter<Integer> {
 
     @Override
     public Integer visit(StmWhile n) {
-        //todo
-        if (n.e.accept(this) == 1) {
+       
+        while (n.e.accept(this) == 1) {
             n.b.accept(this);
         }
         return null;
