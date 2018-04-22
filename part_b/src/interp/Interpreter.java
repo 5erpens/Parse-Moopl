@@ -156,14 +156,19 @@ public class Interpreter extends VisitorAdapter<Integer> {
         }
     }
 
+    //todo
     @Override
     public Integer visit(ExpNewObject n) {
-        int i = 0;
-        for (Exp e : n.es) {
-            e.accept(this);
-            i++;
+        int a = mooplRunTime.allocClassInstance(symTab.getClassSignature(n.id).getImmediateFieldCount(),n.id);
+        List<Integer> Parameter = new LinkedList<>();
+        for (Exp e:n.es){
+            Parameter.add(e.accept(this));
         }
-        return mooplRunTime.allocClassInstance(i, n.id);
+        mooplRunTime.pushFrame(a,Parameter,symTab.getClassSignature(n.id).getMethodSignature(n.id).getMethodDecl().stackAllocation);
+        symTab.getClassSignature(n.id).getMethodSignature(n.id).getMethodDecl().accept(this);
+        mooplRunTime.popFrame();
+
+        return a;
     }
 
     @Override
@@ -179,11 +184,7 @@ public class Interpreter extends VisitorAdapter<Integer> {
     @Override
     public Integer visit(ExpVar n) {
         if (!n.v.isStackAllocated) {
-            if(mooplRunTime.getFrameEntry(n.v.offset) == 0){
             return mooplRunTime.deref(mooplRunTime.getFrameEntry(-2)).elements[n.v.offset];
-            }else{
-                return null;
-            }
         } else {
             return mooplRunTime.getFrameEntry(n.v.offset);
         }
@@ -211,13 +212,9 @@ public class Interpreter extends VisitorAdapter<Integer> {
 
         MethodDecl mdl = symTab.getClassSignature(mooplRunTime.deref(acc).type.toString()).getMethodSignature(n.id).getMethodDecl();
         mooplRunTime.pushFrame(acc, list, mdl.stackAllocation);
-
-        for (Stm s : mdl.ss) {
-            s.accept(this);
-        }
-
+       
         mooplRunTime.popFrame();
-        return mooplRunTime.getFrameEntry(mdl.accept(this));
+        return mdl.accept(this);
     }
 
     @Override
