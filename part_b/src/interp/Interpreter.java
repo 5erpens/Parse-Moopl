@@ -77,28 +77,17 @@ public class Interpreter extends VisitorAdapter<Integer> {
         return null;
     }
 
+    //All overrtide methods
     /*=============================================*/
  /* Expression visitors (all return an Integer) */
  /*=============================================*/
     // TODO
     // integer literals
+    @Override
     public Integer visit(ExpInteger n) {
         return n.i; // all expressions return an integer (see class header)
     }
 
-
-    /*======================================*/
- /* Statement visitors (all return null) */
- /*======================================*/
-    // TODO
-    // output statements
-    public Integer visit(StmOutput n) {
-        int v = n.e.accept(this);
-        System.out.println(v);
-        return null; // statements all return null
-    }
-
-    //All overrtide methods
     @Override
     public Integer visit(StmIf s) {
         int count = s.e.accept(this);
@@ -128,155 +117,188 @@ public class Interpreter extends VisitorAdapter<Integer> {
             case TIMES:
                 return n.e1.accept(this) * n.e2.accept(this);
             case AND:
-//                if (n.e1.accept(this) && n.e2.accept(this)) {
-//                    return 1;
-//                } else {
-//                    return null;
-//                }
-                break;
+                if (n.e1.accept(this) + n.e2.accept(this) == 2) {
+                    return 1;
+                } else {
+                    return 0;
+                }
             case LESSTHAN:
                 if (n.e1.accept(this) < n.e2.accept(this)) {
                     return 1;
                 } else {
-                    return null;
+                    return 0;
                 }
             case EQUALS:
                 if (Objects.equals(n.e1.accept(this), n.e2.accept(this))) {
                     return 1;
                 } else {
-                    return null;
+                    return 0;
                 }
         }
+        return 0;
     }
 
     @Override
     public Integer visit(ExpIsnull n) {
-        return super.visit(n); //To change body of generated methods, choose Tools | Templates.
+        if (n.e.accept(this) == null) {
+            return 1;
+        } else {
+            return 0;
+        }
     }
 
     @Override
     public Integer visit(ExpNot n) {
-        return super.visit(n); //To change body of generated methods, choose Tools | Templates.
+        if (n.e.equals(1)) {
+            return 0;
+        } else {
+            return 1;
+        }
     }
 
     @Override
     public Integer visit(ExpNewObject n) {
-        return super.visit(n); //To change body of generated methods, choose Tools | Templates.
+        int i = 0;
+        for (Exp e : n.es) {
+            e.accept(this);
+            i++;
+        }
+        return mooplRunTime.allocClassInstance(i, n.id);
     }
 
     @Override
     public Integer visit(ExpNewArray n) {
-        return super.visit(n); //To change body of generated methods, choose Tools | Templates.
+        return mooplRunTime.allocArrayObject(n.e.accept(this), n.t);
     }
 
     @Override
     public Integer visit(ExpSelf n) {
-        return super.visit(n); //To change body of generated methods, choose Tools | Templates.
+        return mooplRunTime.getFrameEntry(-2);
     }
 
     @Override
     public Integer visit(ExpVar n) {
-        return super.visit(n); //To change body of generated methods, choose Tools | Templates.
+        if (!n.v.isStackAllocated) {
+            if(mooplRunTime.getFrameEntry(n.v.offset) == 0){
+            return mooplRunTime.deref(mooplRunTime.getFrameEntry(-2)).elements[n.v.offset];
+            }else{
+                return null;
+            }
+        } else {
+            return mooplRunTime.getFrameEntry(n.v.offset);
+        }
     }
 
     @Override
     public Integer visit(ExpFalse n) {
-        return super.visit(n); //To change body of generated methods, choose Tools | Templates.
+        return 0;
     }
 
     @Override
     public Integer visit(ExpTrue n) {
-        return super.visit(n); //To change body of generated methods, choose Tools | Templates.
+        return 1;
     }
 
     @Override
     public Integer visit(ExpCall n) {
-        return super.visit(n); //To change body of generated methods, choose Tools | Templates.
+        int acc = n.e.accept(this);
+
+        LinkedList<Integer> list = new LinkedList<>();
+
+        for (Exp exp : n.es) {
+            list.add(exp.accept(this));
+        }
+
+        MethodDecl mdl = symTab.getClassSignature(mooplRunTime.deref(acc).type.toString()).getMethodSignature(n.id).getMethodDecl();
+        mooplRunTime.pushFrame(acc, list, mdl.stackAllocation);
+
+        for (Stm s : mdl.ss) {
+            s.accept(this);
+        }
+
+        mooplRunTime.popFrame();
+        return mooplRunTime.getFrameEntry(mdl.accept(this));
     }
 
     @Override
     public Integer visit(ExpArrayLength n) {
-        return super.visit(n); //To change body of generated methods, choose Tools | Templates.
+        return mooplRunTime.deref(n.e.accept(this)).elements.length;
     }
 
     @Override
     public Integer visit(ExpArrayLookup n) {
-        return super.visit(n); //To change body of generated methods, choose Tools | Templates.
+        return mooplRunTime.deref(n.e1.accept(this)).elements[n.e2.accept(this)];
+    }
+
+    /*======================================*/
+ /* Statement visitors (all return null) */
+ /*======================================*/
+    // TODO
+    // output statements
+    @Override
+    public Integer visit(StmOutput n) {
+        int v = n.e.accept(this);
+        System.out.println(v);
+        return null; // statements all return null
     }
 
     @Override
     public Integer visit(StmCall n) {
-        return super.visit(n); //To change body of generated methods, choose Tools | Templates.
+        int acc = n.e.accept(this);
+        LinkedList<Integer> list = new LinkedList<>();
+
+        for (Exp e : n.es) {
+            list.add(e.accept(this));
+        }
+
+        MethodDecl mdl = symTab.getClassSignature(mooplRunTime.deref(acc).type.toString()).getMethodSignature(n.id).getMethodDecl();
+        mooplRunTime.pushFrame(acc, list, mdl.stackAllocation);
+
+        for (Stm s : mdl.ss) {
+            s.accept(this);
+        }
+        mooplRunTime.popFrame();
+        return null;
+
     }
 
     @Override
     public Integer visit(StmArrayAssign n) {
-        return super.visit(n); //To change body of generated methods, choose Tools | Templates.
+        mooplRunTime.deref(n.e1.accept(this)).elements[n.e2.accept(this)] = n.e3.accept(this);
+        return null;
     }
 
     @Override
     public Integer visit(StmAssign n) {
-        return super.visit(n); //To change body of generated methods, choose Tools | Templates.
+        if (!n.v.isStackAllocated) {
+            mooplRunTime.deref(mooplRunTime.getFrameEntry(-2)).elements[n.v.offset] = n.e.accept(this);
+        } else {
+            mooplRunTime.setFrameEntry(n.v.offset, n.e.accept(this));
+        }
+        return null;
     }
 
     @Override
     public Integer visit(StmWhile n) {
-        return super.visit(n); //To change body of generated methods, choose Tools | Templates.
+        //todo
+        if (n.e.accept(this) == 1) {
+            n.b.accept(this);
+        }
+        return null;
     }
 
     @Override
     public Integer visit(StmVarDecl n) {
-        return super.visit(n); //To change body of generated methods, choose Tools | Templates.
+        return null;
     }
 
     @Override
     public Integer visit(StmBlock n) {
-        return super.visit(n); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public Integer visit(TypeClassType n) {
-        return super.visit(n); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public Integer visit(TypeInt n) {
-        return super.visit(n); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public Integer visit(TypeBoolean n) {
-        return super.visit(n); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public Integer visit(TypeArray n) {
-        return super.visit(n); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public Integer visit(Formal n) {
-        return super.visit(n); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public Integer visit(FieldDecl n) {
-        return super.visit(n); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public Integer visit(ClassDeclExtends n) {
-        return super.visit(n); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public Integer visit(ClassDeclSimple n) {
-        return super.visit(n); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public Integer visit(Program n) {
-        return super.visit(n); //To change body of generated methods, choose Tools | Templates.
+        LinkedList<Integer> list = new LinkedList<>();
+        for (Stm s : n.ss) {
+            list.add(s.accept(this));
+        }
+        return null;
     }
 
     /*=====================================*/
