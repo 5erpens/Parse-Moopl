@@ -157,7 +157,6 @@ public class Interpreter extends VisitorAdapter<Integer> {
         }
     }
 
-    //todo
     @Override
     public Integer visit(ExpNewObject n) {
         LinkedList<Integer> list = new LinkedList<>();
