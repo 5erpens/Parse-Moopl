@@ -160,16 +160,15 @@ public class Interpreter extends VisitorAdapter<Integer> {
     //todo
     @Override
     public Integer visit(ExpNewObject n) {
-        int a = mooplRunTime.allocClassInstance(symTab.getClassSignature(n.id).getImmediateFieldCount(),n.id);
-        List<Integer> Parameter = new LinkedList<>();
+        LinkedList<Integer> list = new LinkedList<>();
         for (Exp e:n.es){
-            Parameter.add(e.accept(this));
+            list.add(e.accept(this));
         }
-        mooplRunTime.pushFrame(a,Parameter,symTab.getClassSignature(n.id).getMethodSignature(n.id).getMethodDecl().stackAllocation);
+        mooplRunTime.pushFrame(mooplRunTime.allocClassInstance(symTab.getClassSignature(n.id).getImmediateFieldCount(),n.id),list,symTab.getClassSignature(n.id).getMethodSignature(n.id).getMethodDecl().stackAllocation);
         symTab.getClassSignature(n.id).getMethodSignature(n.id).getMethodDecl().accept(this);
         mooplRunTime.popFrame();
 
-        return a;
+        return mooplRunTime.allocClassInstance(symTab.getClassSignature(n.id).getImmediateFieldCount(),n.id);
     }
 
     @Override
